@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PATIENCE, Cat Laser Wall Clock</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts for Exhibition Minimalist Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@200;300;400;500&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', '"Noto Serif JP"', 'serif'],
+            sans: ['"Inter"', 'sans-serif'],
+          },
+          colors: {
+            gallery: {
+              light: '#f5f4ef',
+              lightPaper: '#eceae3',
+              dark: '#121213',
+              darkPaper: '#1a1a1c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Gallery fine tuning */
+    body {
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    
+    /* Fine subtle film grain overlay */
+    .film-grain {
+      background-image: radial-gradient(rgba(0,0,0,0.06) 1px, transparent 0);
+      background-size: 16px 16px;
+    }
+    .dark .film-grain {
+      background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 0);
+      background-size: 16px 16px;
+    }
+
+    /* Range slider custom styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: transparent;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 12px;
+      width: 12px;
+      border-radius: 50%;
+      background: currentColor;
+      cursor: pointer;
+      margin-top: -5px;
+      transition: transform 0.15s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.3);
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 2px;
+      cursor: pointer;
+      background: rgba(128, 128, 128, 0.3);
+      border-radius: 1px;
+    }
+  </style>
+</head>
+
+<body class="bg-gallery-light dark:bg-gallery-dark text-neutral-800 dark:text-neutral-200 min-h-screen flex flex-col justify-between transition-colors duration-700 ease-out font-sans overflow-x-hidden selection:bg-neutral-300 dark:selection:bg-neutral-800">
+
+  <!-- Grain ambience -->
+  <div class="fixed inset-0 pointer-events-none film-grain z-0 opacity-60"></div>
+
+  <!-- Header / Curatorial Note -->
+  <header class="relative z-10 w-full px-6 py-6 sm:px-12 flex justify-between items-start text-xs tracking-widest uppercase">
+    <div>
+      <h1 class="font-serif text-lg sm:text-xl tracking-wider text-neutral-900 dark:text-neutral-100 font-light">
+        PATIENCE, Cat Laser Wall Clock <span class="text-xs font-sans tracking-normal opacity-40 not-italic ml-2 font-normal">忍耐・猫時計</span>
+      </h1>
+      <p class="text-[10px] sm:text-xs opacity-50 tracking-wider font-light mt-0.5">
+        Feline Kinetic Portrait &bull; Ocular Laser Chronometer
+      </p>
+    </div>
+
+    <!-- Gallery utilities -->
+    <div class="flex items-center space-x-4 sm:space-x-6 text-[11px] lowercase tracking-wider">
+      <button id="soundToggleBtn" class="opacity-60 hover:opacity-100 transition-opacity p-1.5 focus:outline-none flex items-center gap-1.5" title="Toggle Cat Chime Sound">
+        <span id="soundIcon">🔊</span>
+        <span class="hidden sm:inline" id="soundLabel">sound on</span>
+      </button>
+
+      <button id="themeToggleBtn" class="opacity-60 hover:opacity-100 transition-opacity p-1.5 focus:outline-none flex items-center gap-1.5" title="Toggle Gallery Light / Dark">
+        <span id="themeIcon">◐</span>
+        <span class="hidden sm:inline" id="themeLabel">dark mode</span>
+      </button>
+
+      <button id="fullscreenBtn" class="opacity-60 hover:opacity-100 transition-opacity p-1.5 focus:outline-none" title="Toggle Fullscreen">
+        <svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Clock Canvas Container -->
+  <main class="relative z-10 flex-1 flex flex-col items-center justify-center p-4 sm:p-8">
+    <div class="relative flex items-center justify-center w-full max-w-[560px] aspect-square">
+      <!-- Soft ambient backdrop bezel shadow -->
+      <div class="absolute inset-2 sm:inset-4 rounded-full bg-gradient-to-b from-black/[0.03] to-black/[0.08] dark:from-white/[0.02] dark:to-white/[0.06] shadow-2xl backdrop-blur-[2px] transition-all duration-700 pointer-events-none"></div>
+
+      <!-- The Core Canvas -->
+      <canvas id="faceCanvas" class="relative z-10 w-full h-full cursor-pointer rounded-full"></canvas>
+    </div>
+
+    <!-- Calibration Instructional Text (Positioned cleanly below the cat clock) -->
+    <div id="hoverGuide" class="mt-3 min-h-[1.25rem] pointer-events-none text-[10px] sm:text-xs tracking-widest text-center text-neutral-400 dark:text-neutral-500 uppercase transition-opacity duration-300 opacity-0">
+      
+    </div>
+  </main>
+
+  <!-- Lower Panel: Controls & Time Status -->
+  <footer class="relative z-10 w-full max-w-2xl mx-auto px-6 pb-6 pt-2 flex flex-col items-center gap-4 text-xs font-light text-neutral-600 dark:text-neutral-400">
+    
+    <!-- Date & Time Readout (Above Mode & Calibrate Buttons) -->
+    <div class="w-full flex flex-col items-center justify-center gap-1 border-b border-neutral-300/40 dark:border-neutral-800/80 pb-3">
+      <div id="dateDisplay" class="text-[11px] sm:text-xs tracking-widest uppercase opacity-60 font-normal">
+        ---
+      </div>
+      <div class="flex items-baseline space-x-3">
+        <span id="digitalClock" class="font-serif text-2xl sm:text-3xl tracking-widest text-neutral-900 dark:text-neutral-100 font-normal">
+          00:00:00
+        </span>
+        <span id="periodBadge" class="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded border border-neutral-300 dark:border-neutral-700 opacity-60">AM</span>
+        <button id="formatToggleBtn" class="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded border border-neutral-300 dark:border-neutral-700 hover:border-neutral-500 dark:hover:border-neutral-400 opacity-75 hover:opacity-100 transition-all cursor-pointer focus:outline-none" title="Switch between 12-hour and 24-hour digital clock">
+          12H
+        </button>
+      </div>
+    </div>
+
+    <!-- Mode Selector, Calibrate Button & Developer Mode Checkbox -->
+    <div class="w-full flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+      <!-- Mode Selector Pills -->
+      <div class="inline-flex rounded-full p-0.5 bg-neutral-200/70 dark:bg-neutral-800/80 border border-neutral-300/50 dark:border-neutral-700/50 text-[11px]">
+        <button id="modePure" class="px-3 py-1 rounded-full transition-all bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm">
+          Art Only
+        </button>
+        <button id="modeOverlay" class="px-3 py-1 rounded-full transition-all text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white">
+          Clock Guide
+        </button>
+      </div>
+
+      <!-- Calibrate Button & Developer Mode Checkbox -->
+      <div class="flex items-center space-x-3 text-[11px]">
+        <button id="calibrateBtn" class="px-2.5 py-1 rounded-full border border-neutral-300 dark:border-neutral-700 hover:border-neutral-500 transition-colors" title="Drag eyes/nose to align perfectly">
+          Calibrate Eyes and Mouth
+        </button>
+        <label class="inline-flex items-center space-x-1.5 cursor-pointer select-none opacity-75 hover:opacity-100 transition-opacity" title="Display live eye & mouth coordinates for default configuration">
+          <input type="checkbox" id="devModeCheckbox" class="rounded border-neutral-400 text-amber-600 focus:ring-0 cursor-pointer">
+          <span>Developer Mode</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Developer Mode Live Attributes Readout -->
+    <div id="devModePanel" class="hidden w-full max-w-xl bg-neutral-900/95 text-emerald-400 font-mono text-[11px] p-3.5 rounded-xl border border-neutral-700 shadow-lg transition-all">
+      <div class="flex items-center justify-between pb-2 mb-2 border-b border-neutral-800 text-[10px] text-neutral-400 uppercase tracking-wider">
+        <span>SUBJECTS[0] Eye &amp; Mouth Attributes (Live)</span>
+        <button id="copyDevConfigBtn" class="px-2 py-0.5 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-200 border border-neutral-600 transition-colors cursor-pointer">
+          Copy Config
+        </button>
+      </div>
+      <pre id="devModeOutput" class="overflow-x-auto leading-relaxed select-all whitespace-pre"></pre>
+    </div>
+
+    <!-- Subtle Legend -->
+    <div class="flex items-center justify-center gap-6 text-[10px] tracking-wider text-neutral-400 dark:text-neutral-500 text-center">
+      <span>Right Orbit: <strong class="font-normal text-neutral-600 dark:text-neutral-300">Hour (1–12)</strong></span>
+      <span>Left Orbit: <strong class="font-normal text-neutral-600 dark:text-neutral-300">Minute (0–60)</strong></span>
+      <span>Breath & Blink: <strong class="font-normal text-neutral-600 dark:text-neutral-300">Second</strong></span>
+    </div>
+  </footer>
+
+  <script>
+    /**
+     * PATIENCE, Cat Laser Wall Clock (忍耐・猫時計) with Ocular Laser Chronometer
+     */
+
+    // Configuration & State
+    const PUPIL_ORBIT_RADIUS = 14;
+
+    // Default frontal real cat portrait with mapped eye/nose coordinates (on 800x800 canvas)
+    const SUBJECTS = [
+      {
+        name: 'Tabby Cat',
+        url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=1000&height=1000&q=85',
+        cropZoom: 1.35,
+        cropOffsetY: -20,
+        leftEye: { x: 292, y: 342, rx: 42, ry: 34, angle: 0.12 },
+        rightEye: { x: 505, y: 338, rx: 42, ry: 34, angle: -0.12 },
+        mouth: { x: 400, y: 495, rx: 42, ry: 22 },
+        irisColor: '#7ca82b',
+        irisInner: '#d4e868',
+        irisOuter: '#2d4212',
+        skinSample: '#786858',
+        skinShadow: '#3e332a',
+        autoDetected: true
+      }
+    ];
+
+    const state = {
+      isDarkMode: false,
+      mode: 'pure',
+      isScrubbing: false,
+      isCalibrating: false,
+      draggingFeature: null,
+      scrubSeconds: 0,
+      subjectIndex: 0,
+      faceImg: new Image(),
+      faceLoaded: false,
+      lastFrameMap: null,
+      blinkState: 0,
+      isBlinking: false,
+      blinkProgress: 0,
+      lastBlinkSecond: -1,
+      breathPhase: 0,
+      subtleDriftX: 0,
+      subtleDriftY: 0,
+      leftEye: { x: 0, y: 0, targetX: 0, targetY: 0 },
+      rightEye: { x: 0, y: 0, targetX: 0, targetY: 0 },
+      mouthBreath: 0,
+      screamOpen: 0,
+      minuteRoarBurst: 0,
+      lastChimeMinute: -1,
+      autoOverlayEndTime: 0,
+      soundEnabled: true,
+      use24Hour: false,
+      sparks: [],
+      scorchMarks: []
+    };
+
+    // DOM Elements
+    const canvas = document.getElementById('faceCanvas');
+    const ctx = canvas.getContext('2d');
+    const dateDisplay = document.getElementById('dateDisplay');
+    const digitalClock = document.getElementById('digitalClock');
+    const periodBadge = document.getElementById('periodBadge');
+    const formatToggleBtn = document.getElementById('formatToggleBtn');
+    const modePure = document.getElementById('modePure');
+    const modeOverlay = document.getElementById('modeOverlay');
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    const soundIcon = document.getElementById('soundIcon');
+    const soundLabel = document.getElementById('soundLabel');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeLabel = document.getElementById('themeLabel');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const calibrateBtn = document.getElementById('calibrateBtn');
+    const devModeCheckbox = document.getElementById('devModeCheckbox');
+    const devModePanel = document.getElementById('devModePanel');
+    const devModeOutput = document.getElementById('devModeOutput');
+    const copyDevConfigBtn = document.getElementById('copyDevConfigBtn');
+    const uploadFaceInput = document.getElementById('uploadFaceInput');
+    const hoverGuide = document.getElementById('hoverGuide');
+
+    // Developer Mode Inspector
+    function updateDevModeDisplay() {
+      if (!devModeCheckbox || !devModeCheckbox.checked) return;
+      const subj = SUBJECTS[state.subjectIndex];
+      if (!subj) return;
+      const fmt = (n) => Math.round(n * 10) / 10;
+      const configSnippet =
+`leftEye: { x: ${fmt(subj.leftEye.x)}, y: ${fmt(subj.leftEye.y)}, rx: ${fmt(subj.leftEye.rx)}, ry: ${fmt(subj.leftEye.ry)}, angle: ${subj.leftEye.angle || 0} },
+rightEye: { x: ${fmt(subj.rightEye.x)}, y: ${fmt(subj.rightEye.y)}, rx: ${fmt(subj.rightEye.rx)}, ry: ${fmt(subj.rightEye.ry)}, angle: ${subj.rightEye.angle || 0} },
+mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.rx)}, ry: ${fmt(subj.mouth.ry)} },`;
+      if (devModeOutput.textContent !== configSnippet) {
+        devModeOutput.textContent = configSnippet;
+      }
+    }
+
+    if (devModeCheckbox) {
+      devModeCheckbox.addEventListener('change', () => {
+        if (devModeCheckbox.checked) {
+          devModePanel.classList.remove('hidden');
+          updateDevModeDisplay();
+        } else {
+          devModePanel.classList.add('hidden');
+        }
+      });
+    }
+
+    if (copyDevConfigBtn) {
+      copyDevConfigBtn.addEventListener('click', () => {
+        const textarea = document.createElement('textarea');
+        textarea.value = devModeOutput.textContent;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          const orig = copyDevConfigBtn.textContent;
+          copyDevConfigBtn.textContent = 'Copied!';
+          setTimeout(() => { copyDevConfigBtn.textContent = orig; }, 1400);
+        } catch (e) {}
+        document.body.removeChild(textarea);
+      });
+    }
+
+    // Toggle 12H / 24H digital clock format
+    if (formatToggleBtn) {
+      formatToggleBtn.addEventListener('click', () => {
+        state.use24Hour = !state.use24Hour;
+        formatToggleBtn.textContent = state.use24Hour ? '24H' : '12H';
+      });
+    }
+
+    /**
+     * Web Audio Feline Vocalizer (Synthesizes realistic meows, yowls, and mad-cat hisses)
+     */
+    let audioCtx = null;
+
+    function ensureAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+      return audioCtx;
+    }
+
+    // Unlock Web Audio on first user interaction
+    ['click', 'touchstart', 'keydown'].forEach(evt => {
+      window.addEventListener(evt, () => ensureAudioContext(), { once: true, passive: true });
+    });
+
+    soundToggleBtn.addEventListener('click', () => {
+      state.soundEnabled = !state.soundEnabled;
+      soundIcon.textContent = state.soundEnabled ? '🔊' : '🔇';
+      soundLabel.textContent = state.soundEnabled ? 'sound on' : 'muted';
+      if (state.soundEnabled) {
+        ensureAudioContext();
+        playCatVocalization(state.mode === 'overlay');
+      }
+    });
+
+    /**
+     * Plays a synthesized feline sound:
+     * - If `isMadScream` is true (Clock Guide active): fierce, vibrating mad-cat yowl + hiss
+     * - Otherwise: expressive double-formant melodic cat meow
+     */
+    function playCatVocalization(isMadScream = false) {
+      if (!state.soundEnabled) return;
+      const actx = ensureAudioContext();
+      if (!actx) return;
+
+      const now = actx.currentTime;
+      state.minuteRoarBurst = 1.0;
+
+      // Vocal cord source (sawtooth + triangle blend)
+      const osc1 = actx.createOscillator();
+      const osc2 = actx.createOscillator();
+      osc1.type = 'sawtooth';
+      osc2.type = 'triangle';
+
+      // Vibrato LFO for feline larynx warble
+      const lfo = actx.createOscillator();
+      const lfoGain = actx.createGain();
+      lfo.frequency.setValueAtTime(isMadScream ? 26 : 7.5, now);
+      lfoGain.gain.setValueAtTime(isMadScream ? 42 : 12, now);
+      lfo.connect(lfoGain);
+      lfoGain.connect(osc1.frequency);
+      lfoGain.connect(osc2.frequency);
+
+      // Feline Vocal Tract Formant Filters
+      const formant1 = actx.createBiquadFilter();
+      formant1.type = 'bandpass';
+      formant1.Q.setValueAtTime(isMadScream ? 3.5 : 5.5, now);
+
+      const formant2 = actx.createBiquadFilter();
+      formant2.type = 'bandpass';
+      formant2.Q.setValueAtTime(4.0, now);
+
+      const masterGain = actx.createGain();
+
+      if (isMadScream) {
+        // Fierce Mad-Cat Yowl + Hiss (1.35 seconds)
+        const dur = 1.35;
+        osc1.frequency.setValueAtTime(520, now);
+        osc1.frequency.exponentialRampToValueAtTime(980, now + 0.18);
+        osc1.frequency.exponentialRampToValueAtTime(760, now + 0.65);
+        osc1.frequency.exponentialRampToValueAtTime(1060, now + 0.95);
+        osc1.frequency.exponentialRampToValueAtTime(440, now + dur);
+
+        osc2.frequency.setValueAtTime(524, now);
+        osc2.frequency.exponentialRampToValueAtTime(986, now + 0.18);
+        osc2.frequency.exponentialRampToValueAtTime(444, now + dur);
+
+        // Open mouth "YAA-OOWW-RRR" vowel sweep
+        formant1.frequency.setValueAtTime(900, now);
+        formant1.frequency.exponentialRampToValueAtTime(1850, now + 0.25);
+        formant1.frequency.exponentialRampToValueAtTime(1100, now + 0.9);
+        formant1.frequency.exponentialRampToValueAtTime(650, now + dur);
+
+        formant2.frequency.setValueAtTime(2200, now);
+        formant2.frequency.exponentialRampToValueAtTime(3200, now + 0.3);
+        formant2.frequency.exponentialRampToValueAtTime(1700, now + dur);
+
+        masterGain.gain.setValueAtTime(0.001, now);
+        masterGain.gain.linearRampToValueAtTime(0.28, now + 0.06);
+        masterGain.gain.setValueAtTime(0.26, now + 0.95);
+        masterGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+        // Add sharp feline hiss burst (filtered white noise)
+        const bufferSize = actx.sampleRate * 0.65;
+        const noiseBuffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = Math.random() * 2 - 1;
+        }
+        const whiteNoise = actx.createBufferSource();
+        whiteNoise.buffer = noiseBuffer;
+
+        const hissFilter = actx.createBiquadFilter();
+        hissFilter.type = 'highpass';
+        hissFilter.frequency.setValueAtTime(3400, now);
+
+        const hissGain = actx.createGain();
+        hissGain.gain.setValueAtTime(0.001, now);
+        hissGain.gain.linearRampToValueAtTime(0.14, now + 0.05);
+        hissGain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+
+        whiteNoise.connect(hissFilter);
+        hissFilter.connect(hissGain);
+        hissGain.connect(actx.destination);
+        whiteNoise.start(now);
+        whiteNoise.stop(now + 0.62);
+
+        osc1.connect(formant1);
+        osc2.connect(formant2);
+        formant1.connect(masterGain);
+        formant2.connect(masterGain);
+        masterGain.connect(actx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        lfo.start(now);
+        osc1.stop(now + dur);
+        osc2.stop(now + dur);
+        lfo.stop(now + dur);
+      } else {
+        // Classic Melodic Cat "Mee-oww" at the top of the minute (0.85 seconds)
+        const dur = 0.85;
+        osc1.frequency.setValueAtTime(460, now);
+        osc1.frequency.exponentialRampToValueAtTime(780, now + 0.22);
+        osc1.frequency.exponentialRampToValueAtTime(640, now + 0.52);
+        osc1.frequency.exponentialRampToValueAtTime(380, now + dur);
+
+        osc2.frequency.setValueAtTime(463, now);
+        osc2.frequency.exponentialRampToValueAtTime(784, now + 0.22);
+        osc2.frequency.exponentialRampToValueAtTime(382, now + dur);
+
+        // Vowel transition: "M-ee-aa-o-w"
+        formant1.frequency.setValueAtTime(650, now);
+        formant1.frequency.exponentialRampToValueAtTime(1550, now + 0.25);
+        formant1.frequency.exponentialRampToValueAtTime(820, now + dur);
+
+        formant2.frequency.setValueAtTime(1800, now);
+        formant2.frequency.exponentialRampToValueAtTime(2650, now + 0.25);
+        formant2.frequency.exponentialRampToValueAtTime(1350, now + dur);
+
+        masterGain.gain.setValueAtTime(0.001, now);
+        masterGain.gain.linearRampToValueAtTime(0.22, now + 0.08);
+        masterGain.gain.setValueAtTime(0.20, now + 0.48);
+        masterGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+        osc1.connect(formant1);
+        osc2.connect(formant2);
+        formant1.connect(masterGain);
+        formant2.connect(masterGain);
+        masterGain.connect(actx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        lfo.start(now);
+        osc1.stop(now + dur);
+        osc2.stop(now + dur);
+        lfo.stop(now + dur);
+      }
+    }
+
+    // Offscreen buffer for seamless mouth/breathing warp
+    const offCanvas = document.createElement('canvas');
+    offCanvas.width = 800;
+    offCanvas.height = 800;
+    const offCtx = offCanvas.getContext('2d');
+
+    function loadSubject(index) {
+      state.subjectIndex = index;
+      state.faceLoaded = false;
+      const subj = SUBJECTS[index];
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        state.faceImg = img;
+        state.faceLoaded = true;
+        prepareOffscreenFace(img, subj);
+        if (!subj.autoDetected) {
+          autoAlignEyesAndMouth(subj);
+          subj.autoDetected = true;
+        }
+        sampleSubjectSkin(subj);
+      };
+      img.src = subj.url;
+    }
+
+    function prepareOffscreenFace(img, subj) {
+      offCtx.clearRect(0, 0, 800, 800);
+      const zoom = subj.cropZoom || 1.25;
+      const offsetY = subj.cropOffsetY || 0;
+      const baseS = Math.min(img.width, img.height);
+      const s = baseS / zoom;
+      const sx = (img.width - s) / 2;
+      const sy = Math.max(0, Math.min(img.height - s, (img.height - s) / 2 + offsetY));
+      offCtx.drawImage(img, sx, sy, s, s, 0, 0, 800, 800);
+    }
+
+    /**
+     * Scans the upper-middle portrait region for the darkest circular clusters
+     * (the real pupils/irises & lash crevices) and snaps the animated eye coordinates
+     * directly over the photograph's real eyes.
+     */
+    function autoAlignEyesAndMouth(subj) {
+      try {
+        const imgData = offCtx.getImageData(0, 0, 800, 800);
+        const data = imgData.data;
+
+        // Helper to compute darkness + local horizontal edge contrast inside a small kernel
+        function findDarkEyeCenter(xMin, xMax, yMin, yMax) {
+          let bestX = (xMin + xMax) / 2;
+          let bestY = (yMin + yMax) / 2;
+          let bestScore = -Infinity;
+
+          // Step by 3px for fast scan
+          for (let y = yMin; y <= yMax; y += 3) {
+            for (let x = xMin; x <= xMax; x += 3) {
+              let darkSum = 0;
+              let scleraContrast = 0;
+
+              // Pupil/Iris core darkness (radius ~12px)
+              for (let dy = -9; dy <= 9; dy += 3) {
+                for (let dx = -9; dx <= 9; dx += 3) {
+                  const idx = ((y + dy) * 800 + (x + dx)) * 4;
+                  const lum = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
+                  darkSum += (255 - lum);
+                }
+              }
+
+              // Check lighter sclera/skin horizontally flanking the iris
+              const leftIdx = (y * 800 + (x - 18)) * 4;
+              const rightIdx = (y * 800 + (x + 18)) * 4;
+              const belowIdx = ((y + 24) * 800 + x) * 4;
+              const lumLeft = 0.299 * data[leftIdx] + 0.587 * data[leftIdx + 1] + 0.114 * data[leftIdx + 2];
+              const lumRight = 0.299 * data[rightIdx] + 0.587 * data[rightIdx + 1] + 0.114 * data[rightIdx + 2];
+              const lumBelow = 0.299 * data[belowIdx] + 0.587 * data[belowIdx + 1] + 0.114 * data[belowIdx + 2];
+              scleraContrast = (lumLeft + lumRight + lumBelow) * 4.2;
+
+              // Prefer slightly lower than eyebrow (cheek below should be bright skin, not an eye socket)
+              const score = darkSum + scleraContrast;
+              if (score > bestScore) {
+                bestScore = score;
+                bestX = x;
+                bestY = y;
+              }
+            }
+          }
+          return { x: bestX, y: bestY };
+        }
+
+        // Scan Left Eye window & Right Eye window
+        const leftDetected = findDarkEyeCenter(210, 375, 250, 430);
+        const rightDetected = findDarkEyeCenter(425, 590, 250, 430);
+
+        // Validate reasonable inter-pupillary distance (110px to 285px) and level horizon
+        const dist = rightDetected.x - leftDetected.x;
+        const yDiff = Math.abs(rightDetected.y - leftDetected.y);
+        if (dist > 110 && dist < 285 && yDiff < 55) {
+          subj.leftEye.x = leftDetected.x;
+          subj.leftEye.y = leftDetected.y;
+          subj.rightEye.x = rightDetected.x;
+          subj.rightEye.y = rightDetected.y;
+
+          // Scale cat eye socket size proportionally (cat eyes are rounder than human eyes)
+          const eyeRx = Math.max(32, Math.min(48, dist * 0.21));
+          const eyeRy = eyeRx * 0.80;
+          subj.leftEye.rx = eyeRx;
+          subj.leftEye.ry = eyeRy;
+          subj.rightEye.rx = eyeRx;
+          subj.rightEye.ry = eyeRy;
+
+          // Estimate cat nose/muzzle position below eyes
+          const midEyeX = (leftDetected.x + rightDetected.x) / 2;
+          const midEyeY = (leftDetected.y + rightDetected.y) / 2;
+          subj.mouth.x = midEyeX;
+          subj.mouth.y = Math.round(midEyeY + dist * 0.72);
+          subj.mouth.rx = dist * 0.22;
+        }
+      } catch (e) {
+        // Fallback to preset coordinates if CORS blocks pixel read
+      }
+    }
+
+    function sampleSubjectSkin(subj) {
+      try {
+        const p = offCtx.getImageData(Math.round(subj.leftEye.x), Math.round(subj.leftEye.y - subj.leftEye.ry - 8), 1, 1).data;
+        if (p[3] > 0) {
+          subj.skinSample = `rgb(${p[0]}, ${p[1]}, ${p[2]})`;
+          subj.skinShadow = `rgb(${Math.max(0, p[0] - 34)}, ${Math.max(0, p[1] - 34)}, ${Math.max(0, p[2] - 34)})`;
+        }
+      } catch (e) {}
+    }
+
+    // Calibrate Eyes Toggle & Interactive Dragging
+    calibrateBtn.addEventListener('click', () => {
+      state.isCalibrating = !state.isCalibrating;
+      if (state.isCalibrating) {
+        calibrateBtn.classList.add('bg-amber-500/20', 'border-amber-500', 'text-amber-700', 'dark:text-amber-300');
+        calibrateBtn.textContent = 'Done Calibrating';
+        hoverGuide.textContent = 'Drag Left Eye, Right Eye, or Mouth to align • Scroll wheel to resize';
+        hoverGuide.classList.remove('opacity-0');
+        hoverGuide.classList.add('opacity-100', 'text-amber-600', 'dark:text-amber-400', 'font-medium');
+      } else {
+        calibrateBtn.classList.remove('bg-amber-500/20', 'border-amber-500', 'text-amber-700', 'dark:text-amber-300');
+        calibrateBtn.textContent = 'Calibrate Eyes and Mouth';
+        hoverGuide.textContent = '';
+        hoverGuide.classList.add('opacity-0');
+        hoverGuide.classList.remove('opacity-100', 'text-amber-600', 'dark:text-amber-400', 'font-medium');
+      }
+    });
+
+    function getCanvasCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: ((clientX - rect.left) / rect.width) * 800,
+        y: ((clientY - rect.top) / rect.height) * 800
+      };
+    }
+
+    function onPointerDown(e) {
+      if (!state.isCalibrating || !state.lastFrameMap) return;
+      const pt = getCanvasCoords(e);
+      const subj = SUBJECTS[state.subjectIndex];
+      const { invX, invY } = state.lastFrameMap;
+      const ux = invX(pt.x);
+      const uy = invY(pt.y);
+
+      const dLeft = Math.hypot(ux - subj.leftEye.x, uy - subj.leftEye.y);
+      const dRight = Math.hypot(ux - subj.rightEye.x, uy - subj.rightEye.y);
+      const dMouth = Math.hypot(ux - subj.mouth.x, uy - subj.mouth.y);
+
+      if (dLeft < 48) state.draggingFeature = 'leftEye';
+      else if (dRight < 48) state.draggingFeature = 'rightEye';
+      else if (dMouth < 55) state.draggingFeature = 'mouth';
+
+      if (state.draggingFeature && e.cancelable) e.preventDefault();
+    }
+
+    function onPointerMove(e) {
+      if (!state.isCalibrating || !state.draggingFeature || !state.lastFrameMap) return;
+      if (e.cancelable) e.preventDefault();
+      const pt = getCanvasCoords(e);
+      const subj = SUBJECTS[state.subjectIndex];
+      const { invX, invY } = state.lastFrameMap;
+      const target = subj[state.draggingFeature];
+      target.x = invX(pt.x);
+      target.y = invY(pt.y);
+      sampleSubjectSkin(subj);
+      updateDevModeDisplay();
+    }
+
+    function onPointerUp() {
+      state.draggingFeature = null;
+    }
+
+    canvas.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+    canvas.addEventListener('touchstart', onPointerDown, { passive: false });
+    window.addEventListener('touchmove', onPointerMove, { passive: false });
+    window.addEventListener('touchend', onPointerUp);
+
+    // Mouse wheel while calibrating resizes the hovered eye socket
+    canvas.addEventListener('wheel', (e) => {
+      if (!state.isCalibrating || !state.lastFrameMap) return;
+      e.preventDefault();
+      const pt = getCanvasCoords(e);
+      const subj = SUBJECTS[state.subjectIndex];
+      const { invX, invY } = state.lastFrameMap;
+      const ux = invX(pt.x);
+      const uy = invY(pt.y);
+      const factor = e.deltaY < 0 ? 1.05 : 0.95;
+
+      if (Math.hypot(ux - subj.leftEye.x, uy - subj.leftEye.y) < 55) {
+        subj.leftEye.rx *= factor;
+        subj.leftEye.ry *= factor;
+      } else if (Math.hypot(ux - subj.rightEye.x, uy - subj.rightEye.y) < 55) {
+        subj.rightEye.rx *= factor;
+        subj.rightEye.ry *= factor;
+      } else if (Math.hypot(ux - subj.mouth.x, uy - subj.mouth.y) < 60) {
+        subj.mouth.rx *= factor;
+        subj.mouth.ry *= factor;
+      }
+      updateDevModeDisplay();
+    }, { passive: false });
+
+    if (uploadFaceInput) {
+      uploadFaceInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const customUrl = ev.target.result;
+          SUBJECTS[0] = {
+            name: 'Custom Cat',
+            url: customUrl,
+            cropZoom: 1.2,
+            cropOffsetY: 0,
+            leftEye: { x: 300, y: 348, rx: 40, ry: 32, angle: 0.1 },
+            rightEye: { x: 500, y: 348, rx: 40, ry: 32, angle: -0.1 },
+            mouth: { x: 400, y: 495, rx: 40, ry: 20 },
+            irisColor: '#98b832',
+            irisInner: '#d8f065',
+            irisOuter: '#2d4212',
+            skinSample: '#8c7865',
+            skinShadow: '#4f4034',
+            autoDetected: false
+          };
+          loadSubject(0);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Load initial cat face
+    loadSubject(0);
+
+    // Theme initialization (respect system preference)
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      setTheme(true);
+    } else {
+      setTheme(false);
+    }
+
+    function setTheme(dark) {
+      state.isDarkMode = dark;
+      if (dark) {
+        document.documentElement.classList.add('dark');
+        themeLabel.textContent = 'light mode';
+      } else {
+        document.documentElement.classList.remove('dark');
+        themeLabel.textContent = 'dark mode';
+      }
+    }
+
+    themeToggleBtn.addEventListener('click', () => setTheme(!state.isDarkMode));
+
+    // Fullscreen support
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    });
+
+    // Resize Canvas keeping crisp HiDPI
+    let width = 0, height = 0, size = 0, scale = 1;
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      size = Math.min(rect.width, rect.height);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      
+      canvas.width = size * dpr;
+      canvas.height = size * dpr;
+      scale = (size * dpr) / 800; // Normalizing coordinate system to 800x800
+
+      ctx.resetTransform();
+      ctx.scale(scale, scale);
+      width = 800;
+      height = 800;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('DOMContentLoaded', resizeCanvas);
+
+    // Mode Buttons
+    function updateModePills() {
+      if (!modePure || !modeOverlay) return;
+      const activeClass = 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm';
+      const inactiveClass = 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white';
+      
+      [modePure, modeOverlay].forEach(btn => {
+        btn.className = `px-3 py-1 rounded-full transition-all ${inactiveClass}`;
+      });
+
+      if (state.mode === 'pure') modePure.className = `px-3 py-1 rounded-full transition-all ${activeClass}`;
+      if (state.mode === 'overlay') modeOverlay.className = `px-3 py-1 rounded-full transition-all ${activeClass}`;
+    }
+
+    if (modePure) {
+      modePure.addEventListener('click', () => {
+        state.autoOverlayEndTime = 0;
+        state.mode = 'pure';
+        updateModePills();
+      });
+    }
+    if (modeOverlay) {
+      modeOverlay.addEventListener('click', () => {
+        state.autoOverlayEndTime = 0;
+        state.mode = 'overlay';
+        updateModePills();
+        // Let out an immediate mad-cat yowl when activating Clock Guide laser mode
+        playCatVocalization(true);
+      });
+    }
+
+    // Tap/Click on face triggers an intentional, expressive organic blink or wink
+    canvas.addEventListener('click', (e) => {
+      if (state.isCalibrating) return;
+      triggerBlink(true);
+    });
+
+    function triggerBlink(forced = false) {
+      if (state.isBlinking && !forced) return;
+      state.isBlinking = true;
+      state.blinkProgress = 0;
+    }
+
+    // Time calculation helper
+    function getActiveTime() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
+      const ms = now.getMilliseconds();
+      const totalSeconds = hours * 3600 + minutes * 60 + seconds + ms / 1000;
+      const dateStr = now.toLocaleDateString(undefined, {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+      return { hours, minutes, seconds, ms, totalSeconds, dateStr };
+    }
+
+    // Animation & Drawing Core
+    let lastTime = performance.now();
+
+    function render(currentTime) {
+      requestAnimationFrame(render);
+      const dt = Math.min((currentTime - lastTime) / 1000, 0.1);
+      lastTime = currentTime;
+
+      const time = getActiveTime();
+
+      // Update Date & Digital Readout (12H or 24H)
+      if (dateDisplay && dateDisplay.textContent !== time.dateStr) {
+        dateDisplay.textContent = time.dateStr;
+      }
+      const pad = (n) => String(Math.floor(n)).padStart(2, '0');
+      if (state.use24Hour) {
+        digitalClock.textContent = `${pad(time.hours)}:${pad(time.minutes)}:${pad(time.seconds)}`;
+        periodBadge.classList.add('hidden');
+      } else {
+        const displayHours = time.hours % 12 || 12;
+        digitalClock.textContent = `${pad(displayHours)}:${pad(time.minutes)}:${pad(time.seconds)}`;
+        periodBadge.textContent = time.hours >= 12 ? 'PM' : 'AM';
+        periodBadge.classList.remove('hidden');
+      }
+
+      // Trigger Cat Vocalization at the beginning of each new minute (when seconds === 0)
+      if (state.lastChimeMinute === -1) {
+        state.lastChimeMinute = time.minutes;
+        // If loading the page during an active quarter-hour/hourly window, activate automatically
+        if (time.minutes === 0 && time.seconds < 30) {
+          state.mode = 'overlay';
+          state.autoOverlayEndTime = currentTime + (30 - time.seconds - time.ms / 1000) * 1000;
+          updateModePills();
+        } else if ((time.minutes === 15 || time.minutes === 30 || time.minutes === 45) && time.seconds < 15) {
+          state.mode = 'overlay';
+          state.autoOverlayEndTime = currentTime + (15 - time.seconds - time.ms / 1000) * 1000;
+          updateModePills();
+        }
+      } else if (time.minutes !== state.lastChimeMinute) {
+        state.lastChimeMinute = time.minutes;
+        // Automatically trigger Clock Guide on the hour (30s) and on 15, 30, 45 minutes (15s)
+        if (time.minutes === 0) {
+          state.mode = 'overlay';
+          state.autoOverlayEndTime = currentTime + 30000;
+          updateModePills();
+        } else if (time.minutes === 15 || time.minutes === 30 || time.minutes === 45) {
+          state.mode = 'overlay';
+          state.autoOverlayEndTime = currentTime + 15000;
+          updateModePills();
+        }
+        if (!state.isScrubbing || time.seconds === 0) {
+          playCatVocalization(state.mode === 'overlay');
+        }
+      }
+
+      // Return to Art Only mode once the scheduled Clock Guide event duration finishes
+      if (state.autoOverlayEndTime > 0 && currentTime >= state.autoOverlayEndTime) {
+        state.autoOverlayEndTime = 0;
+        state.mode = 'pure';
+        updateModePills();
+      }
+
+      // Decay the minute vocal roar burst smoothly
+      if (state.minuteRoarBurst > 0) {
+        state.minuteRoarBurst = Math.max(0, state.minuteRoarBurst - dt * 1.1);
+      }
+
+      // Smoothly animate the mad-cat screaming mouth opening in Clock Guide mode or during a minute meow
+      const targetScream = (state.mode === 'overlay' ? 1.0 : 0.0) + state.minuteRoarBurst * 0.65;
+      state.screamOpen += (Math.min(1.15, targetScream) - state.screamOpen) * Math.min(1, dt * 10);
+
+      // Blink every second on the second tick
+      if (time.seconds !== state.lastBlinkSecond) {
+        state.lastBlinkSecond = time.seconds;
+        triggerBlink(true);
+      }
+
+      if (state.isBlinking) {
+        state.blinkProgress += dt * 14.5; // Crisp, natural feline 1-second tick blink (~0.21s duration)
+        if (state.blinkProgress >= Math.PI) {
+          state.blinkProgress = 0;
+          state.isBlinking = false;
+          state.blinkState = 0;
+        } else {
+          // Smooth asymmetrical curve (fast close, slightly softer open)
+          state.blinkState = Math.pow(Math.sin(state.blinkProgress), 0.85);
+        }
+      }
+
+      // Breathing Cycle (period ~ 4.2 seconds)
+      state.breathPhase = (time.totalSeconds % 4.2) / 4.2 * Math.PI * 2;
+      const breathScale = Math.sin(state.breathPhase); // -1 to 1
+
+      // Compute Clock Angles:
+      // Hour (Right eye/pupil): Complete 12-hour orbit (360 deg)
+      // 12 o'clock is -PI/2
+      const hourProgress = ((time.hours % 12) + time.minutes / 60 + time.seconds / 3600) / 12;
+      const hourAngle = hourProgress * Math.PI * 2 - Math.PI / 2;
+
+      // Minute (Left eye/pupil): Complete 60-minute orbit (360 deg)
+      const minuteProgress = (time.minutes + time.seconds / 60 + time.ms / 60000) / 60;
+      const minuteAngle = minuteProgress * Math.PI * 2 - Math.PI / 2;
+
+      // Smooth interpolation for eyes
+      state.rightEye.targetX = Math.cos(hourAngle) * PUPIL_ORBIT_RADIUS;
+      state.rightEye.targetY = Math.sin(hourAngle) * PUPIL_ORBIT_RADIUS;
+
+      state.leftEye.targetX = Math.cos(minuteAngle) * PUPIL_ORBIT_RADIUS;
+      state.leftEye.targetY = Math.sin(minuteAngle) * PUPIL_ORBIT_RADIUS;
+
+      // Soft spring easing towards target gaze
+      state.rightEye.x += (state.rightEye.targetX - state.rightEye.x) * (dt * 8);
+      state.rightEye.y += (state.rightEye.targetY - state.rightEye.y) * (dt * 8);
+      state.leftEye.x += (state.leftEye.targetX - state.leftEye.x) * (dt * 8);
+      state.leftEye.y += (state.leftEye.targetY - state.leftEye.y) * (dt * 8);
+
+      // Micro drift for organic presence
+      state.subtleDriftX = Math.sin(currentTime * 0.001) * 2;
+      state.subtleDriftY = Math.cos(currentTime * 0.0014) * 1.5;
+
+      // Clear & Draw
+      ctx.clearRect(0, 0, width, height);
+      drawClockFace(time, breathScale, hourAngle, minuteAngle, dt);
+      updateDevModeDisplay();
+    }
+
+    function drawClockFace(time, breath, hourAngle, minuteAngle, dt = 0.016) {
+      const centerX = 400 + state.subtleDriftX * 0.6;
+      const centerY = 400 + state.subtleDriftY * 0.6 + (breath * 1.1);
+      const isDark = state.isDarkMode;
+      const subj = SUBJECTS[state.subjectIndex];
+      const showOverlay = state.mode === 'overlay';
+
+      ctx.save();
+
+      // 1. Circular Clock Mask (Extreme close-up cropped cat face)
+      ctx.beginPath();
+      ctx.arc(400, 400, 380, 0, Math.PI * 2);
+      ctx.clip();
+
+      // Base background while loading
+      ctx.fillStyle = isDark ? '#1a1a1d' : '#e8e4dc';
+      ctx.fillRect(0, 0, 800, 800);
+
+      let leftEyePos = null;
+      let rightEyePos = null;
+      let mouthPos = null;
+
+      if (state.faceLoaded) {
+        // Draw real cat portrait with subtle living purr/breathing zoom
+        const scaleBreath = 1.06 + breath * 0.005;
+        const drawSize = 800 * scaleBreath;
+        const offsetX = centerX - drawSize / 2;
+        const offsetY = centerY - drawSize / 2;
+
+        ctx.drawImage(offCanvas, offsetX, offsetY, drawSize, drawSize);
+
+        // Compute transformed anchor coordinates for the current frame
+        const mapX = (x) => offsetX + (x / 800) * drawSize;
+        const mapY = (y) => offsetY + (y / 800) * drawSize;
+        const invX = (cx) => ((cx - offsetX) / drawSize) * 800;
+        const invY = (cy) => ((cy - offsetY) / drawSize) * 800;
+        state.lastFrameMap = { mapX, mapY, invX, invY, scaleBreath };
+
+        leftEyePos = {
+          x: mapX(subj.leftEye.x),
+          y: mapY(subj.leftEye.y),
+          rx: subj.leftEye.rx * scaleBreath,
+          ry: subj.leftEye.ry * scaleBreath,
+          angle: subj.leftEye.angle || 0
+        };
+
+        rightEyePos = {
+          x: mapX(subj.rightEye.x),
+          y: mapY(subj.rightEye.y),
+          rx: subj.rightEye.rx * scaleBreath,
+          ry: subj.rightEye.ry * scaleBreath,
+          angle: subj.rightEye.angle || 0
+        };
+
+        mouthPos = {
+          x: mapX(subj.mouth.x),
+          y: mapY(subj.mouth.y),
+          rx: subj.mouth.rx * scaleBreath,
+          ry: subj.mouth.ry * scaleBreath
+        };
+
+        // 2. Real-time Feline Animated Eyes (Left = Minute, Right = Hour)
+        drawCatEye({
+          pos: leftEyePos,
+          gazeX: state.leftEye.x,
+          gazeY: state.leftEye.y,
+          blink: state.blinkState,
+          subj,
+          timeAngle: minuteAngle,
+          label: 'M',
+          showOverlay,
+          isDark
+        });
+
+        drawCatEye({
+          pos: rightEyePos,
+          gazeX: state.rightEye.x,
+          gazeY: state.rightEye.y,
+          blink: state.blinkState,
+          subj,
+          timeAngle: hourAngle,
+          label: 'H',
+          showOverlay,
+          isDark
+        });
+
+        // 3. Subtle Feline Nose/Whisker Pad Purr Twitch OR Mad-Cat Screaming Mouth (in Clock Guide / Chime)
+        drawCatNoseAndMouth(mouthPos, breath, subj, showOverlay);
+      }
+
+      // 4. Realistic Clock Rim Vignette & 3D Depth Shadow
+      const vignette = ctx.createRadialGradient(400, 400, 275, 400, 400, 382);
+      vignette.addColorStop(0, 'rgba(0,0,0,0)');
+      vignette.addColorStop(0.78, showOverlay ? 'rgba(15,5,0,0.28)' : 'rgba(0,0,0,0.08)');
+      vignette.addColorStop(1, showOverlay ? 'rgba(10,2,0,0.72)' : 'rgba(0,0,0,0.45)');
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, 800, 800);
+
+      // 5. Clock Dial Ticks & Laser-Burned Numbers on Rim
+      drawClockDialAndBurnedNumbers(showOverlay, hourAngle, minuteAngle);
+
+      // 6. High-Energy Ocular Laser Beams Burning the Numbers (in Clock Guide mode)
+      if (showOverlay && leftEyePos && rightEyePos) {
+        drawLaserBeamsAndSparks(leftEyePos, rightEyePos, hourAngle, minuteAngle, dt);
+      }
+
+      // 7. Calibration Alignment Handles (when Calibrate Eyes is active)
+      if (state.isCalibrating && leftEyePos && rightEyePos && mouthPos) {
+        drawCalibrationHandles(leftEyePos, rightEyePos, mouthPos);
+      }
+
+      ctx.restore();
+
+      // Outer Minimalist Clock Bezel Ring
+      ctx.beginPath();
+      ctx.arc(400, 400, 380, 0, Math.PI * 2);
+      ctx.lineWidth = showOverlay ? 3 : 2;
+      ctx.strokeStyle = showOverlay
+        ? 'rgba(255, 80, 20, 0.45)'
+        : (isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)');
+      ctx.stroke();
+    }
+
+    /**
+     * Renders a photorealistic feline eye with multi-layered iris stroma,
+     * orbiting vertical slit pupil, glass corneal dome, and real-fur eyelids.
+     */
+    function drawCatEye({ pos, gazeX, gazeY, blink, subj, timeAngle, label, showOverlay, isDark }) {
+      const { x, y, rx, ry, angle } = pos;
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle || 0);
+
+      // 1. Subtle, tightly-hugging translucent shadow rim so the real cat fur shows right up to the eye
+      ctx.save();
+      const socketFeather = ctx.createRadialGradient(0, 0, rx * 0.85, 0, 0, rx * 1.12);
+      socketFeather.addColorStop(0, 'rgba(20, 15, 12, 0.32)');
+      socketFeather.addColorStop(0.6, 'rgba(30, 24, 20, 0.12)');
+      socketFeather.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = socketFeather;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, rx * 1.12, ry * 1.12, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Helper for the almond-shaped feline palpebral fissure (eye opening)
+      const defineEyeAperture = (openRatio = 1) => {
+        const h = ry * Math.max(0.03, openRatio);
+        ctx.beginPath();
+        ctx.moveTo(-rx * 1.05, 0);
+        ctx.bezierCurveTo(-rx * 0.55, -h * 1.18, rx * 0.52, -h * 1.15, rx * 1.05, 0);
+        ctx.bezierCurveTo(rx * 0.52, h * 1.15, -rx * 0.55, h * 1.18, -rx * 1.05, 0);
+        ctx.closePath();
+      };
+
+      // 2. Clip inside open eye aperture
+      ctx.save();
+      defineEyeAperture(1 - blink * 0.96);
+      ctx.clip();
+
+      // Dark scleral rim & deep feline globe base (shifts to fiery molten amber/orange when lasers are firing)
+      const globeGrad = ctx.createRadialGradient(gazeX * 0.4, gazeY * 0.4, rx * 0.1, 0, 0, rx * 1.15);
+      if (showOverlay) {
+        globeGrad.addColorStop(0, '#ffea75');
+        globeGrad.addColorStop(0.48, '#e85d12');
+        globeGrad.addColorStop(0.85, '#6e1405');
+        globeGrad.addColorStop(1, '#1a0300');
+      } else {
+        globeGrad.addColorStop(0, subj.irisInner || '#d4e868');
+        globeGrad.addColorStop(0.55, subj.irisColor || '#7ca82b');
+        globeGrad.addColorStop(0.88, subj.irisOuter || '#2d4212');
+        globeGrad.addColorStop(1, '#0b0e06');
+      }
+      ctx.fillStyle = globeGrad;
+      ctx.fillRect(-rx * 1.2, -ry * 1.2, rx * 2.4, ry * 2.4);
+
+      // 3. Orbiting Iris & Vertical Slit Pupil (shifted by gaze vector)
+      const gx = gazeX * 1.15;
+      const gy = gazeY * 0.95;
+
+      ctx.save();
+      ctx.translate(gx, gy);
+
+      // Radial iris stroma fibers & crypts
+      const fiberCount = 44;
+      for (let i = 0; i < fiberCount; i++) {
+        const a = (i / fiberCount) * Math.PI * 2;
+        const len = rx * (0.78 + (i % 3) * 0.12);
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(a) * (rx * 0.14), Math.sin(a) * (ry * 0.22));
+        ctx.lineTo(Math.cos(a + 0.04) * len, Math.sin(a + 0.04) * len);
+        if (showOverlay) {
+          ctx.strokeStyle = i % 2 === 0
+            ? 'rgba(255, 210, 90, 0.34)'
+            : 'rgba(95, 12, 0, 0.36)';
+        } else {
+          ctx.strokeStyle = i % 2 === 0
+            ? 'rgba(235, 255, 140, 0.22)'
+            : 'rgba(25, 42, 10, 0.28)';
+        }
+        ctx.lineWidth = 1.3;
+        ctx.stroke();
+      }
+
+      // Golden peripupillary collarette ring around the slit pupil
+      const collarette = ctx.createRadialGradient(0, 0, rx * 0.08, 0, 0, rx * 0.56);
+      collarette.addColorStop(0, showOverlay ? 'rgba(255, 160, 40, 0.72)' : 'rgba(240, 255, 130, 0.38)');
+      collarette.addColorStop(0.55, showOverlay ? 'rgba(255, 45, 0, 0.32)' : 'rgba(0, 0, 0, 0)');
+      collarette.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = collarette;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, rx * 0.45, ry * 0.72, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Keep vertical slit pupil upright in world space by counter-rotating socket angle
+      ctx.save();
+      ctx.rotate(-(angle || 0));
+
+      const slitW = showOverlay ? rx * 0.19 : rx * 0.16;
+      const slitH = ry * 0.88;
+
+      // Outer thermal/amber glow around pupil when in Laser Clock Guide mode
+      if (showOverlay) {
+        ctx.shadowColor = '#ff3300';
+        ctx.shadowBlur = 14;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(0, -slitH);
+      ctx.quadraticCurveTo(slitW, 0, 0, slitH);
+      ctx.quadraticCurveTo(-slitW, 0, 0, -slitH);
+      ctx.closePath();
+      ctx.fillStyle = showOverlay ? '#2a0400' : '#050507';
+      ctx.fill();
+
+      // Incandescent core inside the slit when firing ocular lasers
+      if (showOverlay) {
+        ctx.beginPath();
+        ctx.moveTo(0, -slitH * 0.75);
+        ctx.quadraticCurveTo(slitW * 0.55, 0, 0, slitH * 0.75);
+        ctx.quadraticCurveTo(-slitW * 0.55, 0, 0, -slitH * 0.75);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(255, 190, 90, 0.85)';
+        ctx.fill();
+      }
+
+      ctx.restore(); // End upright slit counter-rotation
+      ctx.restore(); // End gaze translation
+
+      // 4. 3D Corneal Dome Specular Catchlights & Upper Lid Shadow
+      const lidShadow = ctx.createLinearGradient(0, -ry, 0, ry * 0.3);
+      lidShadow.addColorStop(0, 'rgba(0, 0, 0, 0.68)');
+      lidShadow.addColorStop(0.45, 'rgba(0, 0, 0, 0.12)');
+      lidShadow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = lidShadow;
+      ctx.fillRect(-rx * 1.1, -ry * 1.1, rx * 2.2, ry * 2.2);
+
+      // Primary window catchlight reflection on corneal dome
+      ctx.save();
+      ctx.translate(gx * 0.35 - rx * 0.24, gy * 0.35 - ry * 0.26);
+      ctx.rotate(-0.35);
+      const catchGrad = ctx.createRadialGradient(0, 0, 1, 0, 0, rx * 0.28);
+      catchGrad.addColorStop(0, 'rgba(255, 255, 255, 0.92)');
+      catchGrad.addColorStop(0.6, 'rgba(240, 248, 255, 0.35)');
+      catchGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.fillStyle = catchGrad;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, rx * 0.24, ry * 0.14, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Secondary pinpoint bottom-right catchlight
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+      ctx.beginPath();
+      ctx.arc(gx * 0.25 + rx * 0.28, gy * 0.25 + ry * 0.24, rx * 0.065, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore(); // End eye aperture clip
+
+      // 5. Eyelid Blinking Closure (samples real fur tone when blinking)
+      if (blink > 0.01) {
+        ctx.save();
+        defineEyeAperture(1);
+        ctx.clip();
+
+        const lidMeetY = (blink - 0.5) * ry * 0.25;
+        const lidGrad = ctx.createLinearGradient(0, -ry * 1.2, 0, ry * 1.2);
+        lidGrad.addColorStop(0, subj.skinShadow || '#3e332a');
+        lidGrad.addColorStop(0.5, subj.skinSample || '#786858');
+        lidGrad.addColorStop(1, subj.skinShadow || '#3e332a');
+        ctx.fillStyle = lidGrad;
+
+        // Upper eyelid sweeping down
+        ctx.beginPath();
+        ctx.rect(-rx * 1.2, -ry * 1.3, rx * 2.4, ry * 1.3 + lidMeetY + ry * (1 - blink) * 0.1);
+        ctx.fill();
+
+        // Lower eyelid sweeping up slightly
+        ctx.beginPath();
+        ctx.rect(-rx * 1.2, ry * (1 - blink * 0.85), rx * 2.4, ry * 1.3);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // 6. Dark Feline Eyeliner Rim & Medial Canthus Tear Duct
+      defineEyeAperture(1 - blink * 0.96);
+      ctx.strokeStyle = '#14110f';
+      ctx.lineWidth = 3.2;
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    /**
+     * Renders the 60 perimeter minute ticks and 12 clock numbers around the bezel.
+     * In `Clock Guide` (showOverlay) mode, numbers glow molten-hot where the lasers hit.
+     */
+    function drawClockDialAndBurnedNumbers(showOverlay, hourAngle, minuteAngle) {
+      const isDark = state.isDarkMode;
+      ctx.save();
+
+      // Normalize angle difference helper (0 to PI)
+      const angleDiff = (a, b) => {
+        let d = Math.abs(a - b) % (Math.PI * 2);
+        return d > Math.PI ? Math.PI * 2 - d : d;
+      };
+
+      // 1. 60 Minute/Hour Perimeter Ticks
+      for (let i = 0; i < 60; i++) {
+        const a = (i / 60) * Math.PI * 2 - Math.PI / 2;
+        const isMajor = i % 5 === 0;
+        const dHour = angleDiff(a, hourAngle);
+        const dMin = angleDiff(a, minuteAngle);
+        const heat = showOverlay
+          ? Math.max(0, 1 - Math.min(dHour, dMin) / 0.22)
+          : 0;
+
+        const rOuter = 368;
+        const rInner = isMajor ? 352 : 360;
+
+        ctx.beginPath();
+        ctx.moveTo(400 + Math.cos(a) * rInner, 400 + Math.sin(a) * rInner);
+        ctx.lineTo(400 + Math.cos(a) * rOuter, 400 + Math.sin(a) * rOuter);
+
+        if (showOverlay) {
+          if (heat > 0.05) {
+            ctx.strokeStyle = `rgba(255, ${Math.round(180 + heat * 75)}, ${Math.round(heat * 220)}, ${0.65 + heat * 0.35})`;
+            ctx.shadowColor = '#ff4400';
+            ctx.shadowBlur = 10 * heat;
+          } else {
+            ctx.strokeStyle = isMajor ? 'rgba(255, 190, 150, 0.42)' : 'rgba(255, 160, 120, 0.18)';
+            ctx.shadowBlur = 0;
+          }
+        } else {
+          ctx.strokeStyle = isDark
+            ? (isMajor ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.08)')
+            : (isMajor ? 'rgba(0,0,0,0.22)' : 'rgba(0,0,0,0.08)');
+        }
+        ctx.lineWidth = isMajor ? 2.2 : 1.1;
+        ctx.stroke();
+      }
+
+      // 2. 12 Clock Numbers around the perimeter (Visible & scorched in Clock Guide mode)
+      if (showOverlay) {
+        const numRadius = 318;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        for (let n = 1; n <= 12; n++) {
+          const a = (n / 12) * Math.PI * 2 - Math.PI / 2;
+          const nx = 400 + Math.cos(a) * numRadius;
+          const ny = 400 + Math.sin(a) * numRadius;
+
+          const dHour = angleDiff(a, hourAngle);
+          const dMin = angleDiff(a, minuteAngle);
+          const heat = Math.max(
+            Math.max(0, 1 - dHour / 0.28),
+            Math.max(0, 1 - dMin / 0.24)
+          );
+
+          ctx.save();
+          ctx.font = `${heat > 0.2 ? '600' : '400'} ${Math.round(28 + heat * 6)}px "Cormorant Garamond", serif`;
+
+          // Charred burn halo behind the number
+          const charGrad = ctx.createRadialGradient(nx, ny, 2, nx, ny, 24 + heat * 12);
+          charGrad.addColorStop(0, `rgba(20, 5, 0, ${0.55 + heat * 0.35})`);
+          charGrad.addColorStop(0.6, `rgba(180, 30, 0, ${heat * 0.55})`);
+          charGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          ctx.fillStyle = charGrad;
+          ctx.beginPath();
+          ctx.arc(nx, ny, 24 + heat * 12, 0, Math.PI * 2);
+          ctx.fill();
+
+          if (heat > 0.08) {
+            ctx.shadowColor = '#ff3300';
+            ctx.shadowBlur = 18 * heat;
+            ctx.fillStyle = heat > 0.65
+              ? '#ffffff'
+              : `rgb(255, ${Math.round(130 + heat * 120)}, ${Math.round(40 + heat * 160)})`;
+          } else {
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
+            ctx.shadowBlur = 6;
+            ctx.fillStyle = 'rgba(255, 225, 200, 0.78)';
+          }
+
+          ctx.fillText(String(n), nx, ny);
+          ctx.restore();
+        }
+      }
+
+      ctx.restore();
+    }
+
+    /**
+     * Interactive alignment handles when "Calibrate Eyes and Mouth" mode is active
+     */
+    function drawCalibrationHandles(leftEyePos, rightEyePos, mouthPos) {
+      ctx.save();
+      const features = [
+        { pos: leftEyePos, label: 'Left Eye (Min)' },
+        { pos: rightEyePos, label: 'Right Eye (Hr)' },
+        { pos: mouthPos, label: 'Mouth / Jaw Hinge' }
+      ];
+
+      features.forEach(({ pos, label }) => {
+        ctx.beginPath();
+        ctx.ellipse(pos.x, pos.y, pos.rx, pos.ry, pos.angle || 0, 0, Math.PI * 2);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Center crosshair dot
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Label tag
+        ctx.font = '500 11px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#fef3c7';
+        ctx.shadowColor = 'rgba(0,0,0,0.85)';
+        ctx.shadowBlur = 4;
+        ctx.fillText(label, pos.x, pos.y - pos.ry - 10);
+      });
+
+      ctx.restore();
+    }
+
+    /**
+     * Subtly animates the cat's nose in sync with purring/seconds,
+     * and when Clock Guide or chime is active, performs a Terry Gilliam / Monty Python
+     * paper-cutout jaw animation: the real cat chin is sliced from `offCanvas` and hinged
+     * downward with jerky stop-motion physics, exposing a dark cutout cavity, slightly
+     * exaggerated paper teeth/fangs, and a waggling pink cat tongue.
+     */
+    function drawCatNoseAndMouth(mouthPos, breath, subj, showOverlay) {
+      const { x, y, rx, ry } = mouthPos;
+      const purrFactor = (breath + 1) * 0.5; // 0 to 1
+      const scream = state.screamOpen; // 0 to ~1.15
+
+      ctx.save();
+
+      // 1. Subtle Feline Nose Leather nostrils & purring breath pulse
+      const nostrilY = y - ry * 0.36;
+      for (let side of [-1, 1]) {
+        ctx.save();
+        ctx.translate(x + side * rx * 0.16, nostrilY);
+        ctx.rotate(side * 0.45);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, rx * (0.08 + purrFactor * 0.025), ry * (0.14 + purrFactor * 0.04), 0, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(18, 8, 10, ${0.32 + purrFactor * 0.22})`;
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // 2. Monty Python Cutout Hinged Jaw & Exaggerated Teeth + Cat Tongue
+      if (scream > 0.02) {
+        // Quantize time to ~12fps steps for authentic Terry Gilliam stop-motion paper-puppet feel
+        const quantTime = Math.floor(performance.now() / 75);
+        const stopMotionChatter = Math.sin(quantTime * 1.9) * 0.14 + Math.cos(quantTime * 3.1) * 0.08;
+        const openAmt = Math.max(0.04, Math.min(1.3, scream * (0.92 + stopMotionChatter)));
+
+        // Seam line right at the real cat's inverted-V upper lip arch (where the two whisker pads meet under the nose)
+        const seamY = y + ry * 0.16;
+        const cutW = rx * 1.52;
+        const cutH = ry * 3.6;
+        const dropPx = openAmt * ry * 2.45;
+        // Slight asymmetrical paper-hinge tilt like a brass-fastener puppet
+        const hingeTilt = (Math.sin(quantTime * 1.3) * 0.055 + 0.03) * openAmt;
+
+        // Helper that traces the exact feline inverted-W / curved upper lip contour:
+        // Rises to a peak at the philtrum (`ox, oy - ry * 0.34`) and curves down & around the rounded whisker pads
+        const traceUpperLipCurve = (ox, oy) => {
+          ctx.moveTo(ox - cutW * 0.92, oy + ry * 0.32);
+          ctx.bezierCurveTo(
+            ox - cutW * 0.62, oy + ry * 0.38,
+            ox - cutW * 0.22, oy - ry * 0.24,
+            ox, oy - ry * 0.36
+          );
+          ctx.bezierCurveTo(
+            ox + cutW * 0.22, oy - ry * 0.24,
+            ox + cutW * 0.62, oy + ry * 0.38,
+            ox + cutW * 0.92, oy + ry * 0.32
+          );
+        };
+
+        // Helper for the y-coordinate along the curved feline upper lip at any horizontal offset `dx` from `x`
+        const getLipCurveY = (dx, baseSeamY) => {
+          const norm = Math.min(1, Math.abs(dx) / (cutW * 0.92));
+          // Smoothly transitions from the high philtrum peak (-ry * 0.36) down along the rounded whisker pads (+ry * 0.32)
+          const arch = Math.pow(norm, 1.35);
+          return baseSeamY - ry * 0.36 + arch * (ry * 0.68);
+        };
+
+        // Define contoured cutout polygon for the cat's real lower jaw & chin fur
+        const defineJawCutoutPath = (ox, oy) => {
+          ctx.beginPath();
+          traceUpperLipCurve(ox, oy);
+          // Scissor-cut polygonal sides down around the chin tuft
+          ctx.lineTo(ox + cutW * 1.02, oy + cutH * 0.50);
+          ctx.lineTo(ox + cutW * 0.68, oy + cutH * 0.92);
+          ctx.lineTo(ox, oy + cutH * 1.04);
+          ctx.lineTo(ox - cutW * 0.68, oy + cutH * 0.92);
+          ctx.lineTo(ox - cutW * 1.02, oy + cutH * 0.50);
+          ctx.closePath();
+        };
+
+        // A. Dark Void Left Behind Where the Real Chin Was Cut Out of the Photo
+        ctx.save();
+        ctx.beginPath();
+        traceUpperLipCurve(x, seamY);
+        ctx.lineTo(x + cutW * 0.86, seamY + dropPx + ry * 0.9);
+        ctx.lineTo(x, seamY + dropPx + ry * 1.25);
+        ctx.lineTo(x - cutW * 0.86, seamY + dropPx + ry * 0.9);
+        ctx.closePath();
+
+        const voidGrad = ctx.createLinearGradient(x, seamY - ry * 0.36, x, seamY + dropPx + ry);
+        voidGrad.addColorStop(0, '#140507');
+        voidGrad.addColorStop(0.55, '#2b090e');
+        voidGrad.addColorStop(1, '#120305');
+        ctx.fillStyle = voidGrad;
+        ctx.fill();
+
+        // Inner paper-cutout shadow along the top lip cut edge
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
+        ctx.lineWidth = 3.5;
+        ctx.stroke();
+
+        ctx.clip();
+
+        // B. Upper Row of Slightly Exaggerated Monty Python Cutout Teeth & Fangs
+        // (Follows the exact feline upper lip curve so teeth emerge right from the real whisker pads)
+        const upperToothCount = 6;
+        const toothSpan = cutW * 0.84;
+        const toothW = toothSpan / upperToothCount;
+        for (let i = 0; i < upperToothCount; i++) {
+          const tx = x - toothSpan * 0.5 + i * toothW;
+          const toothCenterDx = (tx + toothW * 0.5) - x;
+          const lipY = getLipCurveY(toothCenterDx, seamY);
+          const jitterH = ((i % 2 === 0) ? 1.08 : 0.94) * ry * 0.60 * Math.min(1, openAmt * 1.3);
+          ctx.fillStyle = i % 2 === 0 ? '#fcf8ec' : '#f2ebd9';
+          ctx.strokeStyle = '#2b2118';
+          ctx.lineWidth = 1.6;
+
+          ctx.beginPath();
+          ctx.moveTo(tx + 1, lipY - 3);
+          ctx.lineTo(tx + toothW - 1, lipY - 3);
+          ctx.lineTo(tx + toothW * 0.82, lipY + jitterH);
+          ctx.lineTo(tx + toothW * 0.18, lipY + jitterH);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+
+        // Exaggerated Upper Cutout Canine Fangs emerging from the curved whisker pads
+        const drawCutoutFang = (fx, fy, fw, fh, dirY) => {
+          ctx.fillStyle = '#fffdf4';
+          ctx.strokeStyle = '#241a12';
+          ctx.lineWidth = 2.0;
+          ctx.beginPath();
+          ctx.moveTo(fx - fw * 0.5, fy);
+          ctx.lineTo(fx + fw * 0.5, fy);
+          ctx.lineTo(fx + (fx < x ? fw * 0.18 : -fw * 0.18), fy + fh * dirY);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Vintage cross-hatch ink line on fang base
+          ctx.beginPath();
+          ctx.moveTo(fx - fw * 0.3, fy + fh * 0.22 * dirY);
+          ctx.lineTo(fx + fw * 0.3, fy + fh * 0.22 * dirY);
+          ctx.strokeStyle = 'rgba(60, 45, 30, 0.35)';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        };
+
+        const fangH = ry * 1.28 * Math.min(1.1, openAmt * 1.25);
+        const fangW = rx * 0.30;
+        const fangDx = cutW * 0.56;
+        const upperFangLipY = getLipCurveY(fangDx, seamY);
+        drawCutoutFang(x - fangDx, upperFangLipY - 3, fangW, fangH, 1);
+        drawCutoutFang(x + fangDx, upperFangLipY - 3, fangW, fangH, 1);
+
+        // C. Exaggerated Waggling Monty Python Paper-Cutout Cat Tongue
+        const tongueWaggleX = Math.sin(quantTime * 2.4) * rx * 0.22 * openAmt;
+        const tongueBobY = Math.cos(quantTime * 3.0) * ry * 0.18 * openAmt;
+        const tongueBaseY = seamY + dropPx * 0.72;
+        const tongueTipX = x + tongueWaggleX;
+        const tongueTipY = seamY + dropPx * 0.38 + ry * 0.65 + tongueBobY;
+
+        ctx.save();
+        ctx.fillStyle = '#ee5d76';
+        ctx.strokeStyle = '#260b10';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(x - rx * 0.48, tongueBaseY + ry * 0.5);
+        ctx.bezierCurveTo(
+          x - rx * 0.62, tongueBaseY - ry * 0.3,
+          tongueTipX - rx * 0.55, tongueTipY,
+          tongueTipX, tongueTipY
+        );
+        ctx.bezierCurveTo(
+          tongueTipX + rx * 0.55, tongueTipY,
+          x + rx * 0.62, tongueBaseY - ry * 0.3,
+          x + rx * 0.48, tongueBaseY + ry * 0.5
+        );
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Bold hand-drawn center crease & rough cat-tongue papillae ticks
+        ctx.beginPath();
+        ctx.moveTo(x, tongueBaseY + ry * 0.25);
+        ctx.quadraticCurveTo(x + tongueWaggleX * 0.5, (tongueBaseY + tongueTipY) * 0.5, tongueTipX, tongueTipY - ry * 0.12);
+        ctx.strokeStyle = '#7a192b';
+        ctx.lineWidth = 2.0;
+        ctx.stroke();
+
+        // Little spiky cat-tongue rasp marks
+        ctx.fillStyle = '#ffb3c1';
+        for (let p = -2; p <= 2; p++) {
+          const px = tongueTipX + p * rx * 0.12;
+          const py = tongueTipY - Math.abs(p) * 3 - ry * 0.22;
+          ctx.beginPath();
+          ctx.moveTo(px - 2.5, py);
+          ctx.lineTo(px, py - 5);
+          ctx.lineTo(px + 2.5, py);
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.restore();
+
+        ctx.restore(); // End mouth cavity clip
+
+        // D. The Hinged Lower Jaw Cutout (Actual Real Cat Chin Sampled from `offCanvas`)
+        ctx.save();
+        // Pivot from the left corner of the jaw like an articulated paper cutout
+        const pivotX = x - cutW * 0.85;
+        const pivotY = seamY + ry * 0.32;
+        ctx.translate(pivotX, pivotY + dropPx);
+        ctx.rotate(hingeTilt);
+        ctx.translate(-pivotX, -pivotY);
+
+        // Draw Lower Cutout Teeth & Fangs sticking UP along the matching curved chin seam
+        for (let i = 0; i < upperToothCount; i++) {
+          const tx = x - toothSpan * 0.46 + i * (toothW * 0.92);
+          const toothCenterDx = (tx + toothW * 0.45) - x;
+          const lipY = getLipCurveY(toothCenterDx, seamY);
+          const jitterH = ((i % 2 === 1) ? 0.95 : 0.82) * ry * 0.48 * Math.min(1, openAmt * 1.25);
+          ctx.fillStyle = i % 2 === 0 ? '#f4eedc' : '#fcf8ec';
+          ctx.strokeStyle = '#2b2118';
+          ctx.lineWidth = 1.5;
+
+          ctx.beginPath();
+          ctx.moveTo(tx + 1, lipY + 4);
+          ctx.lineTo(tx + toothW * 0.88 - 1, lipY + 4);
+          ctx.lineTo(tx + toothW * 0.72, lipY - jitterH);
+          ctx.lineTo(tx + toothW * 0.16, lipY - jitterH);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+
+        // Lower Cutout Fangs sticking up from the hinged chin
+        const lowerFangDx = cutW * 0.48;
+        const lowerFangLipY = getLipCurveY(lowerFangDx, seamY);
+        drawCutoutFang(x - lowerFangDx, lowerFangLipY + 4, fangW * 0.85, fangH * 0.78, -1);
+        drawCutoutFang(x + lowerFangDx, lowerFangLipY + 4, fangW * 0.85, fangH * 0.78, -1);
+
+        // Drop shadow cast by the floating paper-cutout chin onto the cat's neck fur
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.68)';
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetY = 7;
+        defineJawCutoutPath(x, seamY);
+        ctx.fillStyle = subj.skinShadow || '#3b3026';
+        ctx.fill();
+        ctx.restore();
+
+        // Clip to the contoured jaw polygon and stamp the real cat chin pixels from `offCanvas`
+        ctx.save();
+        defineJawCutoutPath(x, seamY);
+        ctx.clip();
+
+        if (state.lastFrameMap) {
+          const { scaleBreath } = state.lastFrameMap;
+          const drawSize = 800 * scaleBreath;
+          const offsetX = state.lastFrameMap.mapX(0);
+          const offsetY = state.lastFrameMap.mapY(0);
+          ctx.drawImage(offCanvas, offsetX, offsetY, drawSize, drawSize);
+        }
+        ctx.restore();
+
+        // Crisp paper-cut edge bevel & dark ink outline along the hinged chin seam
+        defineJawCutoutPath(x, seamY);
+        ctx.strokeStyle = 'rgba(245, 238, 220, 0.38)';
+        ctx.lineWidth = 2.0;
+        ctx.stroke();
+
+        ctx.beginPath();
+        traceUpperLipCurve(x, seamY);
+        ctx.strokeStyle = '#1a120e';
+        ctx.lineWidth = 2.6;
+        ctx.stroke();
+
+        ctx.restore(); // End hinged jaw transform
+
+        // Upper cut lip edge line following the cat's real curved whisker-pad lips
+        ctx.beginPath();
+        traceUpperLipCurve(x, seamY);
+        ctx.strokeStyle = '#1a120e';
+        ctx.lineWidth = 2.8;
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    /**
+     * Renders intense ocular laser beams from the cat's pupils to the clock numbers,
+     * leaving glowing scorch trails, plasma hotspots, and flying ember sparks.
+     */
+    function drawLaserBeamsAndSparks(leftEyePos, rightEyePos, hourAngle, minuteAngle, dt) {
+      // If eyes are mostly closed during a blink, briefly interrupt the laser beam
+      const beamPower = Math.max(0, 1 - state.blinkState * 1.35);
+
+      // Compute exact pupil origin inside each eye
+      const getPupilOrigin = (eyePos, gaze) => {
+        const cosA = Math.cos(eyePos.angle || 0);
+        const sinA = Math.sin(eyePos.angle || 0);
+        const lx = gaze.x * 1.15;
+        const ly = gaze.y * 0.95;
+        return {
+          x: eyePos.x + (lx * cosA - ly * sinA),
+          y: eyePos.y + (lx * sinA + ly * cosA)
+        };
+      };
+
+      const leftOrigin = getPupilOrigin(leftEyePos, state.leftEye);
+      const rightOrigin = getPupilOrigin(rightEyePos, state.rightEye);
+
+      // Target points right on the clock number ring (radius 316)
+      const targetRadius = 318;
+      const minTarget = {
+        x: 400 + Math.cos(minuteAngle) * targetRadius,
+        y: 400 + Math.sin(minuteAngle) * targetRadius
+      };
+      const hourTarget = {
+        x: 400 + Math.cos(hourAngle) * targetRadius,
+        y: 400 + Math.sin(hourAngle) * targetRadius
+      };
+
+      // Record glowing scorch trail marks along the number ring
+      if (beamPower > 0.25) {
+        state.scorchMarks.push(
+          { x: minTarget.x + (Math.random() - 0.5) * 4, y: minTarget.y + (Math.random() - 0.5) * 4, life: 1.0, r: 5 + Math.random() * 4 },
+          { x: hourTarget.x + (Math.random() - 0.5) * 4, y: hourTarget.y + (Math.random() - 0.5) * 4, life: 1.0, r: 7 + Math.random() * 5 }
+        );
+        if (state.scorchMarks.length > 90) {
+          state.scorchMarks.splice(0, state.scorchMarks.length - 90);
+        }
+
+        // Spawn flying sparks & rising smoke particles at both laser impact points
+        const spawnImpactParticles = (target, isHour) => {
+          const count = isHour ? 3 : 2;
+          for (let i = 0; i < count; i++) {
+            const spreadAngle = Math.atan2(400 - target.y, 400 - target.x) + (Math.random() - 0.5) * 2.2;
+            const speed = 35 + Math.random() * 110;
+            state.sparks.push({
+              x: target.x + (Math.random() - 0.5) * 6,
+              y: target.y + (Math.random() - 0.5) * 6,
+              vx: Math.cos(spreadAngle) * speed,
+              vy: Math.sin(spreadAngle) * speed - 20,
+              life: 0.4 + Math.random() * 0.45,
+              maxLife: 0.85,
+              size: 1.4 + Math.random() * 2.4,
+              isSmoke: Math.random() < 0.28
+            });
+          }
+        };
+        spawnImpactParticles(minTarget, false);
+        spawnImpactParticles(hourTarget, true);
+      }
+
+      ctx.save();
+
+      // 1. Render smoldering scorch marks along the dial
+      for (let i = state.scorchMarks.length - 1; i >= 0; i--) {
+        const m = state.scorchMarks[i];
+        m.life -= dt * 0.9;
+        if (m.life <= 0) {
+          state.scorchMarks.splice(i, 1);
+          continue;
+        }
+        const grad = ctx.createRadialGradient(m.x, m.y, 0.5, m.x, m.y, m.r);
+        grad.addColorStop(0, `rgba(255, 160, 40, ${m.life * 0.65})`);
+        grad.addColorStop(0.5, `rgba(200, 30, 0, ${m.life * 0.45})`);
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 2. Helper to draw a multi-layered plasma laser beam
+      const drawSingleLaser = (origin, target, widthScale, label) => {
+        if (beamPower <= 0.05) return;
+        const flicker = 0.88 + Math.random() * 0.24;
+        const alpha = beamPower * flicker;
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        ctx.lineCap = 'round';
+
+        // Outer red thermal bloom
+        ctx.beginPath();
+        ctx.moveTo(origin.x, origin.y);
+        ctx.lineTo(target.x, target.y);
+        ctx.strokeStyle = `rgba(255, 25, 0, ${0.42 * alpha})`;
+        ctx.lineWidth = 14 * widthScale * flicker;
+        ctx.shadowColor = '#ff1100';
+        ctx.shadowBlur = 24;
+        ctx.stroke();
+
+        // Mid orange-crimson plasma core
+        ctx.beginPath();
+        ctx.moveTo(origin.x, origin.y);
+        ctx.lineTo(target.x, target.y);
+        ctx.strokeStyle = `rgba(255, 110, 20, ${0.85 * alpha})`;
+        ctx.lineWidth = 5.5 * widthScale * flicker;
+        ctx.stroke();
+
+        // Inner incandescent white-hot needle beam
+        ctx.beginPath();
+        ctx.moveTo(origin.x, origin.y);
+        ctx.lineTo(target.x, target.y);
+        ctx.strokeStyle = `rgba(255, 255, 240, ${0.98 * alpha})`;
+        ctx.lineWidth = 2.0 * widthScale;
+        ctx.stroke();
+
+        // Ocular muzzle flashflare at the cat's slit pupil
+        const eyeFlare = ctx.createRadialGradient(origin.x, origin.y, 1, origin.x, origin.y, 22 * widthScale);
+        eyeFlare.addColorStop(0, `rgba(255, 255, 255, ${0.95 * alpha})`);
+        eyeFlare.addColorStop(0.35, `rgba(255, 90, 10, ${0.8 * alpha})`);
+        eyeFlare.addColorStop(1, 'rgba(255, 0, 0, 0)');
+        ctx.fillStyle = eyeFlare;
+        ctx.beginPath();
+        ctx.arc(origin.x, origin.y, 22 * widthScale, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Molten impact fireball where the laser burns the clock number
+        const impactR = (26 + Math.random() * 10) * widthScale;
+        const impactFlare = ctx.createRadialGradient(target.x, target.y, 1, target.x, target.y, impactR);
+        impactFlare.addColorStop(0, `rgba(255, 255, 255, ${alpha})`);
+        impactFlare.addColorStop(0.3, `rgba(255, 180, 40, ${0.95 * alpha})`);
+        impactFlare.addColorStop(0.65, `rgba(255, 35, 0, ${0.65 * alpha})`);
+        impactFlare.addColorStop(1, 'rgba(255, 0, 0, 0)');
+        ctx.fillStyle = impactFlare;
+        ctx.beginPath();
+        ctx.arc(target.x, target.y, impactR, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      };
+
+      // Left Eye = Minute Laser (focused beam), Right Eye = Hour Laser (heavy beam)
+      drawSingleLaser(leftOrigin, minTarget, 0.88, 'MIN');
+      drawSingleLaser(rightOrigin, hourTarget, 1.15, 'HR');
+
+      // 3. Update & render flying ember sparks and smoke
+      for (let i = state.sparks.length - 1; i >= 0; i--) {
+        const p = state.sparks[i];
+        p.life -= dt;
+        if (p.life <= 0) {
+          state.sparks.splice(i, 1);
+          continue;
+        }
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        if (p.isSmoke) {
+          p.vy -= 18 * dt; // Smoke drifts upward
+          p.vx *= 0.96;
+        } else {
+          p.vy += 120 * dt; // Sparks arc with gravity
+        }
+
+        const lifeRatio = Math.max(0, p.life / p.maxLife);
+        ctx.save();
+        if (p.isSmoke) {
+          ctx.fillStyle = `rgba(40, 32, 30, ${lifeRatio * 0.35})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * (2.4 - lifeRatio), 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.globalCompositeOperation = 'screen';
+          ctx.strokeStyle = lifeRatio > 0.5 ? '#ffffff' : '#ff6600';
+          ctx.shadowColor = '#ff2200';
+          ctx.shadowBlur = 8;
+          ctx.lineWidth = p.size * lifeRatio;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p.x - p.vx * 0.025, p.y - p.vy * 0.025);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      ctx.restore();
+    }
+
+    // Start Animation Loop
+    window.onload = function() {
+      resizeCanvas();
+      requestAnimationFrame(render);
+    };
+  </script>
+</body>
+</html>
