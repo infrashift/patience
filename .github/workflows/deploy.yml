@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Build with Astro and upload the Pages artifact
-        uses: withastro/action@v5
+        uses: withastro/action@v6
         with:
           package-manager: bun@latest
 
