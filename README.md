@@ -8,7 +8,10 @@
 [![Build Status](https://img.shields.io/badge/build-purring-brightgreen.svg?style=flat-square)](#)
 [![Carbon Footprint](https://img.shields.io/badge/Amazon_Rainforest_Consumed-1.00%25-critical.svg?style=flat-square)](#the-infrashiftio-global-mandate)
 [![Monty Python Physics](https://img.shields.io/badge/Jaw_Hinge-Terry_Gilliam_Certified-orange.svg?style=flat-square)](#key-features--horological-breakthroughs)
-[![Zero Dependencies](https://img.shields.io/badge/node__modules-0_bytes-blue.svg?style=flat-square)](#installation--deployment)
+[![All of the Dependencies](https://img.shields.io/badge/All_of_the_Dependencies-node__modules_%E2%88%9E-blue.svg?style=flat-square)](#installation--deployment)
+[![Deploy](https://github.com/infrashift/patience/actions/workflows/deploy.yml/badge.svg)](https://github.com/infrashift/patience/actions/workflows/deploy.yml)
+
+### 🌐 [Launch the clock](https://infrashift.github.io/patience/clock/) · [Project site](https://infrashift.github.io/patience/) · [Infrashift.io](https://infrashift.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT_(Meow_In_Time)-yellow.svg?style=flat-square)](#license)
 
 </div>
@@ -52,32 +55,42 @@ You're welcome, humanity.
 
 ## 🚀 Installation & Deployment
 
-Despite consuming roughly $4.2 \times 10^{14}\text{ Joules}$ of frontier LLM inference to conceive, the resulting artifact is a **100% self-contained, zero-build single HTML file** (`index.html`). There is no Webpack, no Vite, no `node_modules` black hole, and no Docker container required.
+Despite consuming roughly 4.2 × 10¹⁴ Joules of frontier LLM inference to conceive, **the clock itself** is still a **100% self-contained, zero-build single HTML file**: [`public/clock/index.html`](public/clock/index.html). No Webpack, no Vite, no `node_modules` black hole. Just open it in a browser.
 
-### Local Execution
+The **project site** around it ([infrashift.github.io/patience](https://infrashift.github.io/patience/)) is built with [Astro](https://astro.build) + [Starlight](https://starlight.astro.build) and [bun](https://bun.sh). The clock is served at [`/patience/clock/`](https://infrashift.github.io/patience/clock/).
+
+### Just the clock
 ```bash
-# 1. Clone this monument to human achievement
-git clone https://github.com/infrashift-io/patience-cat-laser-clock.git
+git clone https://github.com/infrashift/patience.git
+cd patience
+xdg-open public/clock/index.html   # Linux  (macOS: open, Windows: start)
+```
 
-# 2. Enter the sanctuary
-cd patience-cat-laser-clock
+### The site (live reload)
+Requires [bun](https://bun.sh) and `make`.
+```bash
+make            # list targets
+make dev        # http://localhost:4321/patience/ — also on your LAN for phones & tablets
+make build      # production build → dist/
+make preview    # serve the production build
+```
 
-# 3. Open index.html in any modern browser
-open index.html   # macOS
-xdg-open index.html # Linux
-start index.html  # Windows
+### Tests
+A [Playwright](https://playwright.dev) suite (`tests/`) checks every page at phone, tablet, laptop, and desktop sizes. It verifies the clock fits the viewport with no scrolling, that no page scrolls sideways, the links, the light/dark sync, and mouse plus touch/pinch calibration.
+```bash
+make test-install   # one-time: download Playwright's Chromium
+make test           # build + run headless
+make test-ui        # interactive UI
+make test-report    # open the last HTML report
 ```
 
 ### Hosting on GitHub Pages
-1. Push `index.html` to the root of your repository's `main` branch.
-2. Navigate to **Settings → Pages**.
-3. Under **Build and deployment**, select **Deploy from a branch** → `main` → `/ (root)` and click **Save**.
-4. Wait 45 seconds for GitHub's CDN to propagate your feline overlord to the public internet.
+Pushing to `main` runs [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml): **test → build → deploy**. Pull requests run the tests only. One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
 ### Running as a Live macOS Desktop Wallpaper
 Yes, **PATIENCE** can judge you directly from your desktop background:
 1. Download the open-source macOS utility **[Plash](https://sindresorhus.com/plash)** (or **Wallpaper Web Page**).
-2. Point Plash to your local `file:///.../index.html` path or your hosted GitHub Pages URL.
+2. Point Plash to `https://infrashift.github.io/patience/clock/` or your local `file:///.../public/clock/index.html`.
 3. Enable **"Browsing Mode"** in Plash if you want to toggle `Clock Guide` lasers on demand.
 
 ---
@@ -86,7 +99,7 @@ Yes, **PATIENCE** can judge you directly from your desktop background:
 
 Every cat's cranial geometry is slightly different. Clicking **Calibrate Eyes and Mouth** in the lower control bar unlocks our interactive alignment HUD:
 - **Drag** the **Left Eye (Min)**, **Right Eye (Hr)**, or **Mouth / Jaw Hinge** handles directly on the canvas.
-- **Scroll Wheel** over any handle to dynamically scale its radius ($r_x, r_y$) to match the subject's anatomy.
+- **Scroll Wheel** (or **pinch** on a touch screen) over any handle to scale its radius (rₓ, r_y) to match the subject's anatomy.
 - Automatic skin/fur pixel sampling (`sampleSubjectSkin`) recalculates eyelid shading in real time.
 
 ---
@@ -101,7 +114,8 @@ We welcome contributions from chronologists, veterinarians, Monty Python histori
    git checkout -b feat/more-intense-ocular-plasma
    ```
 3. **Strict Contribution Guidelines:**
-   - **Preserve the Single-File Mandate:** Everything must remain inside `index.html`. If you open a Pull Request that adds a `package.json`, a bundler removes a kitten's whiskers.
+   - **Preserve the Single-File Mandate:** The clock must remain inside `public/clock/index.html`. The website around it was granted a `package.json` by special feline dispensation. The clock was not. Every bundler imported into the clock removes a kitten's whiskers.
+   - **Run `make test`** before opening a PR. The cat must fit on every screen, including the one in your pocket.
    - **Acoustic Fidelity:** Any modifications to `playCatVocalization()` must be tested within earshot of a real domestic housecat. If your real cat does not immediately look up in alarm, your formant filter $Q$-values are too weak.
    - **Ecological Parity:** Please keep all PR descriptions concise so we don't burn down another $\frac{1}{100}\text{th}$ of the Amazon running CI/CD code review bots.
 4. **Submit a Pull Request.**

@@ -58,3 +58,17 @@ LineIDs.dbg.bak
 
 # TwinCAT Measurement
 *.vsm
+
+### Astro / bun ###
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+.DS_Store
+
+### Playwright ###
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>PATIENCE, Cat Laser Wall Clock</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -76,38 +76,114 @@
       background: rgba(128, 128, 128, 0.3);
       border-radius: 1px;
     }
+
+    /* ── Viewport-fit layout ─────────────────────────────────────────────
+       The page is exactly one viewport tall. Header and footer take what
+       they need; the clock is the largest square that fits in the space
+       left over (container query units on .app-main). */
+    body.app {
+      height: 100vh;
+      height: 100dvh;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      grid-template-areas: "header" "main" "footer";
+      overflow: hidden;
+    }
+    .app-header {
+      grid-area: header;
+      padding-top: max(1rem, env(safe-area-inset-top));
+      padding-left: max(1rem, env(safe-area-inset-left));
+      padding-right: max(1rem, env(safe-area-inset-right));
+    }
+    .app-main {
+      grid-area: main;
+      min-height: 0;
+      container-type: size;
+    }
+    .clock-frame {
+      --clock-max: 560px;
+      width: min(100cqw, 100cqh, var(--clock-max));
+      aspect-ratio: 1 / 1;
+    }
+    @media (min-width: 1024px) and (min-height: 960px) {
+      .clock-frame { --clock-max: 720px; }
+    }
+    @media (min-width: 1600px) and (min-height: 1200px) {
+      .clock-frame { --clock-max: 900px; }
+    }
+    .app-footer {
+      grid-area: footer;
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+      padding-left: max(1rem, env(safe-area-inset-left));
+      padding-right: max(1rem, env(safe-area-inset-right));
+    }
+    #devModePanel { max-height: 30vh; overflow: auto; }
+
+    /* Short screens: drop the decorative extras so the clock keeps its size. */
+    @media (max-height: 700px) {
+      .legend, .app-subtitle { display: none !important; }
+    }
+
+    /* Landscape phones: clock on the left at full height, controls on the right. */
+    @media (orientation: landscape) and (max-height: 540px) {
+      body.app {
+        grid-template-columns: minmax(0, 1fr) minmax(15rem, 40%);
+        grid-template-rows: auto minmax(0, 1fr);
+        grid-template-areas: "main header" "main footer";
+      }
+      .app-header { flex-wrap: wrap; gap: 0.5rem; padding-bottom: 0.5rem; }
+      .app-header h1 { font-size: 1rem; }
+      .app-header .jp-title { display: none !important; }
+      .app-main { padding: max(0.5rem, env(safe-area-inset-top)) 0.5rem max(0.5rem, env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left)); }
+      .app-footer { align-self: center; gap: 0.75rem; }
+    }
+
+    /* Touch devices: finger-sized tap targets. */
+    @media (pointer: coarse) {
+      .tap { min-width: 40px; min-height: 40px; justify-content: center; }
+      .pill { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    }
   </style>
 </head>
 
-<body class="bg-gallery-light dark:bg-gallery-dark text-neutral-800 dark:text-neutral-200 min-h-screen flex flex-col justify-between transition-colors duration-700 ease-out font-sans overflow-x-hidden selection:bg-neutral-300 dark:selection:bg-neutral-800">
+<body class="app bg-gallery-light dark:bg-gallery-dark text-neutral-800 dark:text-neutral-200 transition-colors duration-700 ease-out font-sans selection:bg-neutral-300 dark:selection:bg-neutral-800">
 
   <!-- Grain ambience -->
   <div class="fixed inset-0 pointer-events-none film-grain z-0 opacity-60"></div>
 
   <!-- Header / Curatorial Note -->
-  <header class="relative z-10 w-full px-6 py-6 sm:px-12 flex justify-between items-start text-xs tracking-widest uppercase">
-    <div>
-      <h1 class="font-serif text-lg sm:text-xl tracking-wider text-neutral-900 dark:text-neutral-100 font-light">
-        PATIENCE, Cat Laser Wall Clock <span class="text-xs font-sans tracking-normal opacity-40 not-italic ml-2 font-normal">忍耐・猫時計</span>
+  <header class="app-header relative z-10 w-full pb-2 sm:pb-4 lg:!px-12 flex justify-between items-start gap-3 text-xs tracking-widest uppercase">
+    <div class="min-w-0">
+      <h1 class="font-serif text-base sm:text-xl tracking-wider text-neutral-900 dark:text-neutral-100 font-light">
+        <a href="../" class="hover:opacity-70 transition-opacity" title="About PATIENCE">PATIENCE, Cat Laser Wall Clock</a> <span class="jp-title hidden sm:inline text-xs font-sans tracking-normal opacity-40 not-italic ml-2 font-normal">忍耐・猫時計</span>
       </h1>
-      <p class="text-[10px] sm:text-xs opacity-50 tracking-wider font-light mt-0.5">
+      <p class="app-subtitle hidden sm:block text-[10px] sm:text-xs opacity-50 tracking-wider font-light mt-0.5">
         Feline Kinetic Portrait &bull; Ocular Laser Chronometer
       </p>
     </div>
 
     <!-- Gallery utilities -->
-    <div class="flex items-center space-x-4 sm:space-x-6 text-[11px] lowercase tracking-wider">
-      <button id="soundToggleBtn" class="opacity-60 hover:opacity-100 transition-opacity p-1.5 focus:outline-none flex items-center gap-1.5" title="Toggle Cat Chime Sound">
+    <div class="flex shrink-0 flex-wrap items-center gap-0.5 lg:gap-4 text-[11px] lowercase tracking-wider">
+      <a id="aboutLink" href="../" class="tap opacity-60 hover:opacity-100 transition-opacity p-1.5 flex items-center gap-1.5" title="About PATIENCE">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke-width="1.5"/><path stroke-linecap="round" stroke-width="1.5" d="M12 11v5M12 8h.01"/></svg>
+        <span class="hidden lg:inline">about</span>
+      </a>
+      <a id="githubLink" href="https://github.com/infrashift/patience" class="tap opacity-60 hover:opacity-100 transition-opacity p-1.5 flex items-center gap-1.5" title="PATIENCE on GitHub" rel="noopener">
+        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8 0 3.2.9.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1 .9 2.2v3.3c0 .3.1.7.8.6A12 12 0 0 0 12 .3"/></svg>
+        <span class="hidden lg:inline">github</span>
+      </a>
+      <button id="soundToggleBtn" class="tap opacity-60 hover:opacity-100 transition-opacity p-1.5 focus:outline-none flex items-center gap-1.5" title="Toggle Cat Chime Sound">
         <span id="soundIcon">🔊</span>
-        <span class="hidden sm:inline" id="soundLabel">sound on</span>
+        <span class="hidden lg:inline" id="soundLabel">sound on</span>
       </button>
 
-      <button id="themeToggleBtn" class="opacity-60 hover:opacity-100 transition-opacity p-1.5 focus:outline-none flex items-center gap-1.5" title="Toggle Gallery Light / Dark">
+      <button id="themeToggleBtn" class="tap opacity-60 hover:opacity-100 transition-opacity p-1.5 focus:outline-none flex items-center gap-1.5" title="Toggle Gallery Light / Dark">
         <span id="themeIcon">◐</span>
-        <span class="hidden sm:inline" id="themeLabel">dark mode</span>
+        <span class="hidden lg:inline" id="themeLabel">dark mode</span>
       </button>
 
-      <button id="fullscreenBtn" class="opacity-60 hover:opacity-100 transition-opacity p-1.5 focus:outline-none" title="Toggle Fullscreen">
+      <button id="fullscreenBtn" class="tap opacity-60 hover:opacity-100 transition-opacity p-1.5 focus:outline-none flex items-center" title="Toggle Fullscreen">
         <svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
         </svg>
@@ -116,8 +192,8 @@
   </header>
 
   <!-- Main Clock Canvas Container -->
-  <main class="relative z-10 flex-1 flex flex-col items-center justify-center p-4 sm:p-8">
-    <div class="relative flex items-center justify-center w-full max-w-[560px] aspect-square">
+  <main class="app-main relative z-10 flex items-center justify-center p-2 sm:p-4">
+    <div class="clock-frame relative flex items-center justify-center">
       <!-- Soft ambient backdrop bezel shadow -->
       <div class="absolute inset-2 sm:inset-4 rounded-full bg-gradient-to-b from-black/[0.03] to-black/[0.08] dark:from-white/[0.02] dark:to-white/[0.06] shadow-2xl backdrop-blur-[2px] transition-all duration-700 pointer-events-none"></div>
 
@@ -126,13 +202,13 @@
     </div>
 
     <!-- Calibration Instructional Text (Positioned cleanly below the cat clock) -->
-    <div id="hoverGuide" class="mt-3 min-h-[1.25rem] pointer-events-none text-[10px] sm:text-xs tracking-widest text-center text-neutral-400 dark:text-neutral-500 uppercase transition-opacity duration-300 opacity-0">
+    <div id="hoverGuide" class="absolute z-20 bottom-1 left-1/2 -translate-x-1/2 w-max max-w-[95%] px-3 py-1 rounded-full bg-gallery-light/85 dark:bg-gallery-dark/85 pointer-events-none text-[10px] sm:text-xs tracking-widest text-center text-neutral-400 dark:text-neutral-500 uppercase transition-opacity duration-300 opacity-0">
       
     </div>
   </main>
 
   <!-- Lower Panel: Controls & Time Status -->
-  <footer class="relative z-10 w-full max-w-2xl mx-auto px-6 pb-6 pt-2 flex flex-col items-center gap-4 text-xs font-light text-neutral-600 dark:text-neutral-400">
+  <footer class="app-footer relative z-10 w-full max-w-2xl mx-auto pt-2 flex flex-col items-center gap-3 sm:gap-4 text-xs font-light text-neutral-600 dark:text-neutral-400">
     
     <!-- Date & Time Readout (Above Mode & Calibrate Buttons) -->
     <div class="w-full flex flex-col items-center justify-center gap-1 border-b border-neutral-300/40 dark:border-neutral-800/80 pb-3">
@@ -154,17 +230,17 @@
     <div class="w-full flex flex-wrap items-center justify-center gap-3 sm:gap-4">
       <!-- Mode Selector Pills -->
       <div class="inline-flex rounded-full p-0.5 bg-neutral-200/70 dark:bg-neutral-800/80 border border-neutral-300/50 dark:border-neutral-700/50 text-[11px]">
-        <button id="modePure" class="px-3 py-1 rounded-full transition-all bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm">
+        <button id="modePure" class="pill px-3 py-1 rounded-full transition-all bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm">
           Art Only
         </button>
-        <button id="modeOverlay" class="px-3 py-1 rounded-full transition-all text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white">
+        <button id="modeOverlay" class="pill px-3 py-1 rounded-full transition-all text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white">
           Clock Guide
         </button>
       </div>
 
       <!-- Calibrate Button & Developer Mode Checkbox -->
       <div class="flex items-center space-x-3 text-[11px]">
-        <button id="calibrateBtn" class="px-2.5 py-1 rounded-full border border-neutral-300 dark:border-neutral-700 hover:border-neutral-500 transition-colors" title="Drag eyes/nose to align perfectly">
+        <button id="calibrateBtn" class="pill px-2.5 py-1 rounded-full border border-neutral-300 dark:border-neutral-700 hover:border-neutral-500 transition-colors" title="Drag eyes/nose to align perfectly">
           Calibrate Eyes and Mouth
         </button>
         <label class="inline-flex items-center space-x-1.5 cursor-pointer select-none opacity-75 hover:opacity-100 transition-opacity" title="Display live eye & mouth coordinates for default configuration">
@@ -186,7 +262,7 @@
     </div>
 
     <!-- Subtle Legend -->
-    <div class="flex items-center justify-center gap-6 text-[10px] tracking-wider text-neutral-400 dark:text-neutral-500 text-center">
+    <div class="legend flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-6 gap-y-1 text-[10px] tracking-wider text-neutral-400 dark:text-neutral-500 text-center">
       <span>Right Orbit: <strong class="font-normal text-neutral-600 dark:text-neutral-300">Hour (1–12)</strong></span>
       <span>Left Orbit: <strong class="font-normal text-neutral-600 dark:text-neutral-300">Minute (0–60)</strong></span>
       <span>Breath & Blink: <strong class="font-normal text-neutral-600 dark:text-neutral-300">Second</strong></span>
@@ -639,7 +715,10 @@ mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.
       if (state.isCalibrating) {
         calibrateBtn.classList.add('bg-amber-500/20', 'border-amber-500', 'text-amber-700', 'dark:text-amber-300');
         calibrateBtn.textContent = 'Done Calibrating';
-        hoverGuide.textContent = 'Drag Left Eye, Right Eye, or Mouth to align • Scroll wheel to resize';
+        const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+        hoverGuide.textContent = coarse
+          ? 'Drag an eye or the mouth to align • Pinch to resize'
+          : 'Drag Left Eye, Right Eye, or Mouth to align • Scroll wheel to resize';
         hoverGuide.classList.remove('opacity-0');
         hoverGuide.classList.add('opacity-100', 'text-amber-600', 'dark:text-amber-400', 'font-medium');
       } else {
@@ -651,36 +730,75 @@ mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.
       }
     });
 
-    function getCanvasCoords(e) {
+    function clientToCanvas(clientX, clientY) {
       const rect = canvas.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
       return {
         x: ((clientX - rect.left) / rect.width) * 800,
         y: ((clientY - rect.top) / rect.height) * 800
       };
     }
 
-    function onPointerDown(e) {
-      if (!state.isCalibrating || !state.lastFrameMap) return;
-      const pt = getCanvasCoords(e);
+    function getCanvasCoords(e) {
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return clientToCanvas(clientX, clientY);
+    }
+
+    // Which calibratable feature (if any) sits under a canvas point.
+    // `slack` widens the hit area (the wheel/pinch use a slightly larger one).
+    function featureAt(pt, slack = 0) {
       const subj = SUBJECTS[state.subjectIndex];
       const { invX, invY } = state.lastFrameMap;
       const ux = invX(pt.x);
       const uy = invY(pt.y);
+      if (Math.hypot(ux - subj.leftEye.x, uy - subj.leftEye.y) < 48 + slack) return 'leftEye';
+      if (Math.hypot(ux - subj.rightEye.x, uy - subj.rightEye.y) < 48 + slack) return 'rightEye';
+      if (Math.hypot(ux - subj.mouth.x, uy - subj.mouth.y) < 55 + slack) return 'mouth';
+      return null;
+    }
 
-      const dLeft = Math.hypot(ux - subj.leftEye.x, uy - subj.leftEye.y);
-      const dRight = Math.hypot(ux - subj.rightEye.x, uy - subj.rightEye.y);
-      const dMouth = Math.hypot(ux - subj.mouth.x, uy - subj.mouth.y);
+    function scaleFeature(feature, rx, ry) {
+      const target = SUBJECTS[state.subjectIndex][feature];
+      target.rx = Math.min(200, Math.max(8, rx));
+      target.ry = Math.min(200, Math.max(8, ry));
+      updateDevModeDisplay();
+    }
 
-      if (dLeft < 48) state.draggingFeature = 'leftEye';
-      else if (dRight < 48) state.draggingFeature = 'rightEye';
-      else if (dMouth < 55) state.draggingFeature = 'mouth';
+    // Two-finger pinch while calibrating resizes the feature between the fingers.
+    let pinch = null;
+    function touchDistance(t) {
+      return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+    }
 
+    function onPointerDown(e) {
+      if (!state.isCalibrating || !state.lastFrameMap) return;
+
+      if (e.touches && e.touches.length === 2) {
+        const mid = clientToCanvas(
+          (e.touches[0].clientX + e.touches[1].clientX) / 2,
+          (e.touches[0].clientY + e.touches[1].clientY) / 2
+        );
+        const feature = featureAt(mid, 25) || state.draggingFeature;
+        state.draggingFeature = null;
+        if (feature) {
+          const target = SUBJECTS[state.subjectIndex][feature];
+          pinch = { feature, d0: touchDistance(e.touches), rx0: target.rx, ry0: target.ry };
+          if (e.cancelable) e.preventDefault();
+        }
+        return;
+      }
+
+      state.draggingFeature = featureAt(getCanvasCoords(e));
       if (state.draggingFeature && e.cancelable) e.preventDefault();
     }
 
     function onPointerMove(e) {
+      if (pinch && e.touches && e.touches.length === 2) {
+        if (e.cancelable) e.preventDefault();
+        const f = touchDistance(e.touches) / (pinch.d0 || 1);
+        scaleFeature(pinch.feature, pinch.rx0 * f, pinch.ry0 * f);
+        return;
+      }
       if (!state.isCalibrating || !state.draggingFeature || !state.lastFrameMap) return;
       if (e.cancelable) e.preventDefault();
       const pt = getCanvasCoords(e);
@@ -693,8 +811,9 @@ mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.
       updateDevModeDisplay();
     }
 
-    function onPointerUp() {
+    function onPointerUp(e) {
       state.draggingFeature = null;
+      if (!e || !e.touches || e.touches.length < 2) pinch = null;
     }
 
     canvas.addEventListener('mousedown', onPointerDown);
@@ -703,29 +822,17 @@ mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.
     canvas.addEventListener('touchstart', onPointerDown, { passive: false });
     window.addEventListener('touchmove', onPointerMove, { passive: false });
     window.addEventListener('touchend', onPointerUp);
+    window.addEventListener('touchcancel', onPointerUp);
 
     // Mouse wheel while calibrating resizes the hovered eye socket
     canvas.addEventListener('wheel', (e) => {
       if (!state.isCalibrating || !state.lastFrameMap) return;
       e.preventDefault();
-      const pt = getCanvasCoords(e);
-      const subj = SUBJECTS[state.subjectIndex];
-      const { invX, invY } = state.lastFrameMap;
-      const ux = invX(pt.x);
-      const uy = invY(pt.y);
+      const feature = featureAt(getCanvasCoords(e), 7);
+      if (!feature) return;
       const factor = e.deltaY < 0 ? 1.05 : 0.95;
-
-      if (Math.hypot(ux - subj.leftEye.x, uy - subj.leftEye.y) < 55) {
-        subj.leftEye.rx *= factor;
-        subj.leftEye.ry *= factor;
-      } else if (Math.hypot(ux - subj.rightEye.x, uy - subj.rightEye.y) < 55) {
-        subj.rightEye.rx *= factor;
-        subj.rightEye.ry *= factor;
-      } else if (Math.hypot(ux - subj.mouth.x, uy - subj.mouth.y) < 60) {
-        subj.mouth.rx *= factor;
-        subj.mouth.ry *= factor;
-      }
-      updateDevModeDisplay();
+      const target = SUBJECTS[state.subjectIndex][feature];
+      scaleFeature(feature, target.rx * factor, target.ry * factor);
     }, { passive: false });
 
     if (uploadFaceInput) {
@@ -759,14 +866,22 @@ mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.
     // Load initial cat face
     loadSubject(0);
 
-    // Theme initialization (respect system preference)
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme(true);
+    // Theme initialization: share the choice made on the Starlight site
+    // (localStorage 'starlight-theme' = 'dark' | 'light' | '' for auto),
+    // falling back to the system preference.
+    const THEME_KEY = 'starlight-theme';
+    let savedTheme = '';
+    try { savedTheme = localStorage.getItem(THEME_KEY) || ''; } catch (e) {}
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      setTheme(savedTheme === 'dark', false);
     } else {
-      setTheme(false);
+      setTheme(!!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches), false);
     }
 
-    function setTheme(dark) {
+    function setTheme(dark, persist = true) {
+      if (persist) {
+        try { localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light'); } catch (e) {}
+      }
       state.isDarkMode = dark;
       if (dark) {
         document.documentElement.classList.add('dark');
@@ -795,10 +910,11 @@ mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.
     function resizeCanvas() {
       const rect = canvas.parentElement.getBoundingClientRect();
       size = Math.min(rect.width, rect.height);
+      if (!size) return;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      
-      canvas.width = size * dpr;
-      canvas.height = size * dpr;
+
+      canvas.width = Math.round(size * dpr);
+      canvas.height = Math.round(size * dpr);
       scale = (size * dpr) / 800; // Normalizing coordinate system to 800x800
 
       ctx.resetTransform();
@@ -806,7 +922,15 @@ mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.
       width = 800;
       height = 800;
     }
-    window.addEventListener('resize', resizeCanvas);
+    // The frame's size comes from CSS (largest square that fits the viewport),
+    // so observe it directly: covers window resizes, rotation, mobile URL-bar
+    // show/hide, split view, and the dev panel opening.
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(resizeCanvas).observe(canvas.parentElement);
+    } else {
+      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('orientationchange', resizeCanvas);
+    }
     window.addEventListener('DOMContentLoaded', resizeCanvas);
 
     // Mode Buttons
