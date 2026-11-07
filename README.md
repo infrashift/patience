@@ -11,7 +11,7 @@
 [![All of the Dependencies](https://img.shields.io/badge/All_of_the_Dependencies-node__modules_%E2%88%9E-blue.svg?style=flat-square)](#installation--deployment)
 [![Deploy](https://github.com/infrashift/patience/actions/workflows/deploy.yml/badge.svg)](https://github.com/infrashift/patience/actions/workflows/deploy.yml)
 
-### 🌐 [Launch the clock](https://infrashift.github.io/patience/clock/) · [Project site](https://infrashift.github.io/patience/) · [Infrashift.io](https://infrashift.io)
+### 🌐 [Launch the clock](https://infrashift.github.io/patience/clock/) · [Project site](https://infrashift.github.io/patience/) · [Changelog](CHANGELOG.md) · [Sister Project: KITTY NATS Speaker](https://github.com/infrashift/kitty-event-bus-client) · [Infrashift.io](https://infrashift.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT_(Meow_In_Time)-yellow.svg?style=flat-square)](#license)
 
 </div>
