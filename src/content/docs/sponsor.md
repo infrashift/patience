@@ -12,4 +12,4 @@ Training frontier AI models to align cutout paper cat teeth along a cubic Bézie
 | ⚡ **The Megawatt Laser Tier** | `$100 / mo` | Your name is etched in molten plasma into the credits, and the cat screams in your honor at `:00`, `:15`, `:30`, and `:45`. |
 | 🏢 **Enterprise Series-A Bailout** | `$10,000 / mo` | Our engineers fly to your office, mount an iPad running **PATIENCE** on your boardroom wall, and explain to your board why this is "Agentic AI." |
 
-👉 **[Become a GitHub Sponsor](https://github.com/sponsors)** or visit **[Infrashift.io](https://infrashift.io)** to inquire about enterprise licensing.
+👉 **[Become a GitHub Sponsor](https://github.com/sponsors/infrashift)** or visit **[Infrashift.io](https://infrashift.io)** to inquire about enterprise licensing.
