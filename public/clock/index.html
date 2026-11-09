@@ -1745,17 +1745,19 @@ mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.
 
       ctx.save();
 
-      // 1. Subtle Feline Nose Leather nostrils & purring breath pulse
-      const nostrilY = y - ry * 0.36;
-      for (let side of [-1, 1]) {
-        ctx.save();
-        ctx.translate(x + side * rx * 0.16, nostrilY);
-        ctx.rotate(side * 0.45);
-        ctx.beginPath();
-        ctx.ellipse(0, 0, rx * (0.08 + purrFactor * 0.025), ry * (0.14 + purrFactor * 0.04), 0, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(18, 8, 10, ${0.32 + purrFactor * 0.22})`;
-        ctx.fill();
-        ctx.restore();
+      // 1. Nostril alignment markers with purring breath pulse (only while calibrating)
+      if (state.isCalibrating) {
+        const nostrilY = y - ry * 0.36;
+        for (let side of [-1, 1]) {
+          ctx.save();
+          ctx.translate(x + side * rx * 0.16, nostrilY);
+          ctx.rotate(side * 0.45);
+          ctx.beginPath();
+          ctx.ellipse(0, 0, rx * (0.08 + purrFactor * 0.025), ry * (0.14 + purrFactor * 0.04), 0, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(18, 8, 10, ${0.32 + purrFactor * 0.22})`;
+          ctx.fill();
+          ctx.restore();
+        }
       }
 
       // 2. Monty Python Cutout Hinged Jaw & Exaggerated Teeth + Cat Tongue
