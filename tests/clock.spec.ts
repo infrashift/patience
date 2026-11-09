@@ -125,4 +125,21 @@ test.describe('clock page', () => {
     const pinched = await featureOnScreen(page, 'rightEye');
     expect(pinched.rx).toBeGreaterThan(c.rx * 1.5);
   });
+
+  test('muting the sound cuts off a meow that is already playing', async ({ page }) => {
+    await openClock(page);
+    const toggle = page.locator('#soundToggleBtn');
+    const live = () => page.evaluate(() => (globalThis as any).eval('activeVocalizations.size') as number);
+
+    await toggle.click(); // sound on → muted
+    await expect(page.locator('#soundLabel')).toHaveText('muted');
+    await toggle.click(); // muted → sound on, plays a meow right away
+    await expect(page.locator('#soundLabel')).toHaveText('sound on');
+    expect(await live(), 'turning sound on should start a meow').toBeGreaterThan(0);
+
+    await toggle.click(); // mute mid-meow
+    await expect(page.locator('#soundLabel')).toHaveText('muted');
+    expect(await live(), 'meow still playing after mute').toBe(0);
+    expect(await page.evaluate(() => (globalThis as any).eval('state.minuteRoarBurst'))).toBe(0);
+  });
 });

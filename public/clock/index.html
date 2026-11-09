@@ -418,6 +418,27 @@ mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.
       return audioCtx;
     }
 
+    // Live vocalizations: { sources, gains } per sound, so muting can cut them off mid-meow
+    const activeVocalizations = new Set();
+
+    function stopAllVocalizations() {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      activeVocalizations.forEach(({ sources, gains }) => {
+        // Short fade to avoid a click, then hard-stop every source
+        gains.forEach(g => {
+          g.gain.cancelScheduledValues(now);
+          g.gain.setValueAtTime(g.gain.value, now);
+          g.gain.linearRampToValueAtTime(0, now + 0.03);
+        });
+        sources.forEach(src => {
+          try { src.stop(now + 0.035); } catch (e) {}
+        });
+      });
+      activeVocalizations.clear();
+      state.minuteRoarBurst = 0;
+    }
+
     // Unlock Web Audio on first user interaction
     ['click', 'touchstart', 'keydown'].forEach(evt => {
       window.addEventListener(evt, () => ensureAudioContext(), { once: true, passive: true });
@@ -430,6 +451,8 @@ mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.
       if (state.soundEnabled) {
         ensureAudioContext();
         playCatVocalization(state.mode === 'overlay');
+      } else {
+        stopAllVocalizations();
       }
     });
 
@@ -471,6 +494,10 @@ mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.
       formant2.Q.setValueAtTime(4.0, now);
 
       const masterGain = actx.createGain();
+
+      const voice = { sources: [osc1, osc2, lfo], gains: [masterGain] };
+      activeVocalizations.add(voice);
+      osc1.onended = () => activeVocalizations.delete(voice);
 
       if (isMadScream) {
         // Fierce Mad-Cat Yowl + Hiss (1.35 seconds)
@@ -524,6 +551,8 @@ mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.
         hissGain.connect(actx.destination);
         whiteNoise.start(now);
         whiteNoise.stop(now + 0.62);
+        voice.sources.push(whiteNoise);
+        voice.gains.push(hissGain);
 
         osc1.connect(formant1);
         osc2.connect(formant2);
