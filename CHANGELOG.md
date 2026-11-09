@@ -12,6 +12,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [`1.3.0`] — 2026-11-09 — *The Pre-Scorch Numeral Disclosure*
+
+### ✨ Added
+- **Always-On Hour Numerals (`drawClockDialAndBurnedNumbers`):** The 12 hour numbers now appear in plain white next to the dial ticks at all times, not only during the quarter-hour laser tantrum.
+  - *Engineering Rationale:* Focus groups reported that numerals visible only while being incinerated were "hard to read" and "a lot to take in at 9:15 AM." The cat now shows you where it will fire before it fires. The scorched, molten numerals in `Clock Guide` mode are unchanged.
+
+---
+
 ## [`1.2.0`] — 2026-11-06 — *The Cybernetic Palpebral Chrome Backport*
 
 ### ✨ Added

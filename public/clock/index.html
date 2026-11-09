@@ -1595,7 +1595,8 @@ mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.
 
     /**
      * Renders the 60 perimeter minute ticks and 12 clock numbers around the bezel.
-     * In `Clock Guide` (showOverlay) mode, numbers glow molten-hot where the lasers hit.
+     * Numbers are plain white normally; in `Clock Guide` (showOverlay) mode they are
+     * scorched and glow molten-hot where the lasers hit.
      */
     function drawClockDialAndBurnedNumbers(showOverlay, hourAngle, minuteAngle) {
       const isDark = state.isDarkMode;
@@ -1642,52 +1643,61 @@ mouth: { x: ${fmt(subj.mouth.x)}, y: ${fmt(subj.mouth.y)}, rx: ${fmt(subj.mouth.
         ctx.stroke();
       }
 
-      // 2. 12 Clock Numbers around the perimeter (Visible & scorched in Clock Guide mode)
-      if (showOverlay) {
-        const numRadius = 318;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+      // 2. 12 Clock Numbers around the perimeter (white normally, scorched in Clock Guide mode)
+      const numRadius = 318;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
 
-        for (let n = 1; n <= 12; n++) {
-          const a = (n / 12) * Math.PI * 2 - Math.PI / 2;
-          const nx = 400 + Math.cos(a) * numRadius;
-          const ny = 400 + Math.sin(a) * numRadius;
+      for (let n = 1; n <= 12; n++) {
+        const a = (n / 12) * Math.PI * 2 - Math.PI / 2;
+        const nx = 400 + Math.cos(a) * numRadius;
+        const ny = 400 + Math.sin(a) * numRadius;
 
-          const dHour = angleDiff(a, hourAngle);
-          const dMin = angleDiff(a, minuteAngle);
-          const heat = Math.max(
-            Math.max(0, 1 - dHour / 0.28),
-            Math.max(0, 1 - dMin / 0.24)
-          );
-
+        if (!showOverlay) {
           ctx.save();
-          ctx.font = `${heat > 0.2 ? '600' : '400'} ${Math.round(28 + heat * 6)}px "Cormorant Garamond", serif`;
-
-          // Charred burn halo behind the number
-          const charGrad = ctx.createRadialGradient(nx, ny, 2, nx, ny, 24 + heat * 12);
-          charGrad.addColorStop(0, `rgba(20, 5, 0, ${0.55 + heat * 0.35})`);
-          charGrad.addColorStop(0.6, `rgba(180, 30, 0, ${heat * 0.55})`);
-          charGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-          ctx.fillStyle = charGrad;
-          ctx.beginPath();
-          ctx.arc(nx, ny, 24 + heat * 12, 0, Math.PI * 2);
-          ctx.fill();
-
-          if (heat > 0.08) {
-            ctx.shadowColor = '#ff3300';
-            ctx.shadowBlur = 18 * heat;
-            ctx.fillStyle = heat > 0.65
-              ? '#ffffff'
-              : `rgb(255, ${Math.round(130 + heat * 120)}, ${Math.round(40 + heat * 160)})`;
-          } else {
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
-            ctx.shadowBlur = 6;
-            ctx.fillStyle = 'rgba(255, 225, 200, 0.78)';
-          }
-
+          ctx.font = '400 28px "Cormorant Garamond", serif';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
+          ctx.shadowBlur = 6;
+          ctx.fillStyle = '#ffffff';
           ctx.fillText(String(n), nx, ny);
           ctx.restore();
+          continue;
         }
+
+        const dHour = angleDiff(a, hourAngle);
+        const dMin = angleDiff(a, minuteAngle);
+        const heat = Math.max(
+          Math.max(0, 1 - dHour / 0.28),
+          Math.max(0, 1 - dMin / 0.24)
+        );
+
+        ctx.save();
+        ctx.font = `${heat > 0.2 ? '600' : '400'} ${Math.round(28 + heat * 6)}px "Cormorant Garamond", serif`;
+
+        // Charred burn halo behind the number
+        const charGrad = ctx.createRadialGradient(nx, ny, 2, nx, ny, 24 + heat * 12);
+        charGrad.addColorStop(0, `rgba(20, 5, 0, ${0.55 + heat * 0.35})`);
+        charGrad.addColorStop(0.6, `rgba(180, 30, 0, ${heat * 0.55})`);
+        charGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = charGrad;
+        ctx.beginPath();
+        ctx.arc(nx, ny, 24 + heat * 12, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (heat > 0.08) {
+          ctx.shadowColor = '#ff3300';
+          ctx.shadowBlur = 18 * heat;
+          ctx.fillStyle = heat > 0.65
+            ? '#ffffff'
+            : `rgb(255, ${Math.round(130 + heat * 120)}, ${Math.round(40 + heat * 160)})`;
+        } else {
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
+          ctx.shadowBlur = 6;
+          ctx.fillStyle = 'rgba(255, 225, 200, 0.78)';
+        }
+
+        ctx.fillText(String(n), nx, ny);
+        ctx.restore();
       }
 
       ctx.restore();
